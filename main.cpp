@@ -17,6 +17,8 @@ int gammaCorrectPixel(int pixel,double inverse_gamma){
 
 int main( int argc, char** argv ){
 	
+	
+	
 	int rank, number_processes;
 	
     MPI_Init(&argc, &argv);	/* starts MPI */
@@ -30,6 +32,24 @@ int main( int argc, char** argv ){
 	int nrows,ncol,channels,buffer_size,item_for_process;
 	
 	if(rank == 0){
+		
+	char *pointer = (char *)malloc(sizeof(char)*8);
+	for (int i=0;i<8;i++){
+			*(pointer + i) = 0x01;
+			printf("Before content of pointer :%d \n",*(pointer+i));
+
+
+	}
+	int integer = *pointer;
+	printf("content of integer :%d \n",integer);
+	*pointer = (int) integer*100000;
+
+	
+	for (int i=0;i<8;i++){
+			printf("After content of pointer :%d \n",*pointer);
+			pointer++;
+	}
+		
 		image = imread(IMAGE_PATH,1);
 		buffer_image=image.ptr();
 		 nrows = image.rows;
@@ -45,12 +65,11 @@ int main( int argc, char** argv ){
     
 	cout<<"out "<<item_for_process<<endl;
 
-	    
 	uchar *gamma_corrected_buffer = (uchar *)malloc((sizeof(uchar))*item_for_process);
-	   
+
    MPI_Scatter(buffer_image, item_for_process, MPI_UNSIGNED_CHAR, gamma_corrected_buffer,item_for_process, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
     
-	
+
 	for(i=0;i < item_for_process;i++){
 		gamma_corrected_buffer[i] = gammaCorrectPixel(gamma_corrected_buffer[i],inverse_gamma);		
 		
@@ -59,7 +78,7 @@ int main( int argc, char** argv ){
 	if(rank == 0){
 			dest = (uchar*)malloc((sizeof(uchar))*buffer_size);
 	}
-	
+
 	MPI_Gather(gamma_corrected_buffer, item_for_process, MPI_UNSIGNED_CHAR, dest, item_for_process, MPI_UNSIGNED_CHAR, 0,MPI_COMM_WORLD);
  
 
