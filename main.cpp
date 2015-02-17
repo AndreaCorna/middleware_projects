@@ -8,30 +8,12 @@
 using namespace cv;
 using namespace std;
 
-Mat correctGamma( Mat& img, double gamma ) {
-	double inverse_gamma = 1.0 / gamma;
 
-	Mat lut_matrix(1, 256, CV_8UC1 );
-	uchar * ptr = lut_matrix.ptr();
-	for( int i = 0; i < 256; i++ )
-	ptr[i] = (int)( pow( (double) i / 255.0, inverse_gamma ) * 255.0 );
-
-	Mat result;
-	LUT( img, lut_matrix, result );
-
-	return result;
-}
 
 int gammaCorrectPixel(int pixel,double inverse_gamma){	
 	return (int)( pow( (double) pixel / 255, inverse_gamma ) * 255.0 );
 }
 
-int* linearize_image(Mat image){
-	int* image_buffer;	
-	image_buffer = (int *) malloc((sizeof(int))*image.rows*image.cols);
-
-	
-	}
 
 int main( int argc, char** argv ){
 	
@@ -63,22 +45,14 @@ int main( int argc, char** argv ){
     
 	cout<<"out "<<item_for_process<<endl;
 
-	//Getting buffer from image
-	
-    //image dimension data
-    
-    
+	    
 	uchar *gamma_corrected_buffer = (uchar *)malloc((sizeof(uchar))*item_for_process);
-	
-	
-    
-   
+	   
    MPI_Scatter(buffer_image, item_for_process, MPI_UNSIGNED_CHAR, gamma_corrected_buffer,item_for_process, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
     
 	
 	for(i=0;i < item_for_process;i++){
-		*gamma_corrected_buffer = gammaCorrectPixel(*gamma_corrected_buffer,inverse_gamma);		
-		gamma_corrected_buffer++;
+		gamma_corrected_buffer[i] = gammaCorrectPixel(gamma_corrected_buffer[i],inverse_gamma);		
 		
 	}
 	uchar* dest = 0;
@@ -86,9 +60,9 @@ int main( int argc, char** argv ){
 			dest = (uchar*)malloc((sizeof(uchar))*buffer_size);
 	}
 	
-	//MPI_Gather(gamma_corrected_buffer, item_for_process, MPI_UNSIGNED_CHAR, dest, item_for_process, MPI_UNSIGNED_CHAR, 0,MPI_COMM_WORLD);
+	MPI_Gather(gamma_corrected_buffer, item_for_process, MPI_UNSIGNED_CHAR, dest, item_for_process, MPI_UNSIGNED_CHAR, 0,MPI_COMM_WORLD);
  
-	//
+
 	if(rank == 0){
 		image.data = dest;
 		imwrite( "./mod_image.jpg", image );
