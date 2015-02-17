@@ -34,55 +34,69 @@ int* linearize_image(Mat image){
 	}
 
 int main( int argc, char** argv ){
-	Mat image;
-	int* image_buffer;	
-	double inverse_gamma = 1.0 / 5;
+	
 	int rank, number_processes;
-	int i;
-    
-   
 	
-	//Getting buffer from image
-	image = imread(IMAGE_PATH,1);
-	uchar *buffer_image=image.ptr();
-	cout << "sizeop uchar " << sizeof(uchar) <<endl;
-    //image dimension data
-    int nrows = image.rows;
-    int ncol = image.cols;
-    int channels = image.channels();
-    //total size of image buffer array
-    int buffer_size = ncol*nrows*channels;
-    cout << "Buffer size: "<<buffer_size <<endl;
-    cout << "Number of processes : "<< number_processes <<endl;
-    int number_values_per_process = (int) buffer_size/number_processes;
-    
-	int *gamma_corrected_buffer = (int *)malloc((sizeof(int))*number_values_per_process);
-	
-	MPI_Init(&argc, &argv);	/* starts MPI */
+    MPI_Init(&argc, &argv);	/* starts MPI */
 	MPI_Comm_rank (MPI_COMM_WORLD, &rank);	/* get current process id */
 	MPI_Comm_size (MPI_COMM_WORLD, &number_processes);
+   
+	Mat image;
+	double inverse_gamma = 1.0 / 5;
+	int i;
+	uchar *buffer_image;
+	int nrows,ncol,channels,buffer_size,item_for_process;
+	
+	if(rank == 0){
+		image = imread(IMAGE_PATH,1);
+		buffer_image=image.ptr();
+		 nrows = image.rows;
+		 ncol = image.cols;
+		 channels = image.channels();
+		 buffer_size = ncol*nrows*channels;
+		 item_for_process = (int) buffer_size/number_processes;
+		cout<<"i've receive "<<item_for_process<<endl;
+	}
+
+	MPI_Bcast(&item_for_process,1,MPI_INT,0,MPI_COMM_WORLD);
+
+    
+	cout<<"out "<<item_for_process<<endl;
+
+	//Getting buffer from image
+	
+    //image dimension data
+    
+    
+	uchar *gamma_corrected_buffer = (uchar *)malloc((sizeof(uchar))*item_for_process);
+	
+	
     
    
-    MPI_Scatter(&buffer_image, number_values_per_process, MPI_INT, gamma_corrected_buffer,
-            number_values_per_process, MPI_INT, 0, MPI_COMM_WORLD);
+   MPI_Scatter(buffer_image, item_for_process, MPI_UNSIGNED_CHAR, gamma_corrected_buffer,item_for_process, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
     
 	
-	for(i=0;i < number_values_per_process;i++){
-		*gamma_corrected_buffer = gammaCorrectPixel(*buffer_image,inverse_gamma);		
+	for(i=0;i < item_for_process;i++){
+		*gamma_corrected_buffer = gammaCorrectPixel(*gamma_corrected_buffer,inverse_gamma);		
 		gamma_corrected_buffer++;
 		
 	}
-	
-	MPI_Gather(gamma_corrected_buffer, number_values_per_process, MPI_INT, buffer_image, number_values_per_process, MPI_INT, 0,MPI_COMM_WORLD);
- 
-	
+	uchar* dest = 0;
 	if(rank == 0){
+			dest = (uchar*)malloc((sizeof(uchar))*buffer_size);
+	}
+	
+	//MPI_Gather(gamma_corrected_buffer, item_for_process, MPI_UNSIGNED_CHAR, dest, item_for_process, MPI_UNSIGNED_CHAR, 0,MPI_COMM_WORLD);
+ 
+	//
+	if(rank == 0){
+		image.data = dest;
 		imwrite( "./mod_image.jpg", image );
 	
 	}
 
 	
-		
+	MPI_Finalize();
 	
 		
 	//Mat image2 = correctGamma(image,2.0);
