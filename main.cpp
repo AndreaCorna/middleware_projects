@@ -46,6 +46,9 @@ int main( int argc, char** argv ){
 	image = imread(IMAGE_PATH,1);
 	uchar *buffer_image=image.ptr();
 	cout << "sizeop uchar " << sizeof(uchar) <<endl;
+	
+		cout << "sizeop mpiint " << 	MPI_INT <<endl;
+
     //image dimension data
     int nrows = image.rows;
     int ncol = image.cols;
@@ -55,6 +58,8 @@ int main( int argc, char** argv ){
     cout << "Buffer size: "<<buffer_size <<endl;
     cout << "Number of processes : "<< number_processes <<endl;
     int number_values_per_process = (int) buffer_size/number_processes;
+    cout << "values per  processes : "<< number_values_per_process <<endl;
+
     
 	int *gamma_corrected_buffer = (int *)malloc((sizeof(int))*number_values_per_process);
 	
@@ -63,24 +68,27 @@ int main( int argc, char** argv ){
 	MPI_Comm_size (MPI_COMM_WORLD, &number_processes);
     
    
-    MPI_Scatter(&buffer_image, number_values_per_process, MPI_INT, gamma_corrected_buffer,
-            number_values_per_process, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(buffer_image, number_values_per_process, MPI_BYTE, gamma_corrected_buffer,
+            number_values_per_process, MPI_BYTE, 0, MPI_COMM_WORLD);
     
-	
+	    printf("Hello from processor %d of %d\n", rank, number_processes);
+
+
 	for(i=0;i < number_values_per_process;i++){
 		*gamma_corrected_buffer = gammaCorrectPixel(*buffer_image,inverse_gamma);		
 		gamma_corrected_buffer++;
 		
 	}
 	
-	MPI_Gather(gamma_corrected_buffer, number_values_per_process, MPI_INT, buffer_image, number_values_per_process, MPI_INT, 0,MPI_COMM_WORLD);
+	MPI_Gather(gamma_corrected_buffer, number_values_per_process, MPI_BYTE, buffer_image, number_values_per_process, MPI_BYTE, 0,MPI_COMM_WORLD);
  
 	
 	if(rank == 0){
 		imwrite( "./mod_image.jpg", image );
 	
 	}
-
+	MPI_Finalize();
+    return 0;
 	
 		
 	
