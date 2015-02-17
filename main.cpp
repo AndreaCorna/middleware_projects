@@ -1,4 +1,5 @@
 #include <iostream>
+#include <mpi.h>
 #include "omp.h"
 #include <cv.h>
 #include <highgui.h>
@@ -35,26 +36,50 @@ int* linearize_image(Mat image){
 int main( int argc, char** argv ){
 	Mat image;
 	int* image_buffer;	
-	int i;
-	int j;
 	double inverse_gamma = 1.0 / 5;
+	int rank, number_processes;
+	int i;
+    
+   
 	
+	//Getting buffer from image
 	image = imread(IMAGE_PATH,1);
 	uchar *buffer_image=image.ptr();
+	cout << "sizeop uchar " << sizeof(uchar) <<endl;
     //image dimension data
     int nrows = image.rows;
     int ncol = image.cols;
     int channels = image.channels();
     //total size of image buffer array
+    int buffer_size = ncol*nrows*channels;
+    cout << "Buffer size: "<<buffer_size <<endl;
+    cout << "Number of processes : "<< number_processes <<endl;
+    int number_values_per_process = (int) buffer_size/number_processes;
+    
+	int *gamma_corrected_buffer = (int *)malloc((sizeof(int))*number_values_per_process);
+	
+	MPI_Init(&argc, &argv);	/* starts MPI */
+	MPI_Comm_rank (MPI_COMM_WORLD, &rank);	/* get current process id */
+	MPI_Comm_size (MPI_COMM_WORLD, &number_processes);
+    
    
+    MPI_Scatter(&buffer_image, number_values_per_process, MPI_INT, gamma_corrected_buffer,
+            number_values_per_process, MPI_INT, 0, MPI_COMM_WORLD);
+    
 	
-	
-	for(i=0;i < ncol*nrows*channels;i++){
-		*buffer_image = gammaCorrectPixel(*buffer_image,inverse_gamma);		
-		buffer_image++;
+	for(i=0;i < number_values_per_process;i++){
+		*gamma_corrected_buffer = gammaCorrectPixel(*buffer_image,inverse_gamma);		
+		gamma_corrected_buffer++;
 		
 	}
 	
+	MPI_Gather(gamma_corrected_buffer, number_values_per_process, MPI_INT, buffer_image, number_values_per_process, MPI_INT, 0,MPI_COMM_WORLD);
+ 
+	
+	if(rank == 0){
+		imwrite( "./mod_image.jpg", image );
+	
+	}
 
 	
 		
@@ -66,5 +91,5 @@ int main( int argc, char** argv ){
 	//Mat gray_image;
 	//cvtColor( image, gray_image, CV_BGR2GRAY );
 
-	imwrite( "./mod_image.jpg", image );
+	//imwrite( "./mod_image.jpg", image );
 }
