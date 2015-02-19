@@ -6,22 +6,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.nio.charset.Charset;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSConnectionFactory;
-import javax.jms.JMSConsumer;
 import javax.jms.JMSContext;
-import javax.jms.JMSException;
 import javax.jms.JMSProducer;
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 
@@ -30,19 +21,12 @@ import javax.naming.NamingException;
 
 public class UrlLoader {
 	
-	public static void main(String[] args) throws NamingException {
-		UrlLoader urlLoader = new UrlLoader("./urls.txt");
-		urlLoader.loadURLInQueue();
 		
-		
-	}
-	
     private String filePath;
     private Context context = null;
     private Queue URLQueue;
     private JMSContext jmsContext=null;
     private JMSProducer jmsProducer;
-    private JMSConsumer jmsConsumer;
     
 	public UrlLoader(String pathToFile) {
 		filePath = pathToFile;
@@ -69,6 +53,12 @@ public class UrlLoader {
 			System.out.println("send message "+ message);
 		
 			jmsProducer.send(URLQueue, message);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 						
 		} 
 		
@@ -91,12 +81,10 @@ public class UrlLoader {
 	private void setup(){
 		
 		try {
-			context=UrlLoader.getContext();			
+			context = Main.getContext();			
 			jmsContext= ((ConnectionFactory) context.lookup("java:comp/DefaultJMSConnectionFactory")).createContext();
 			URLQueue = (Queue) context.lookup("URLQueue");
 			jmsProducer = jmsContext.createProducer();
-			jmsConsumer = jmsContext.createConsumer(URLQueue);
-			jmsConsumer.setMessageListener(new Myconsumer());
 
 
 		} catch (NamingException e) {
@@ -106,33 +94,7 @@ public class UrlLoader {
 		
 		
 	}
-	
-	private static Context getContext() throws NamingException {
-		Properties props = new Properties();
-		props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
-		props.setProperty("java.naming.factory.url.pkgs", "com.sun.enterprise.naming");
-		props.setProperty("java.naming.provider.url", "iiop://localhost:3700");
-		return new InitialContext(props);
-	}
-	
-	
-	private class Myconsumer implements MessageListener{
 		
-		
-		
-		@Override
-		public void onMessage(Message msg) {
-			try {
-				System.out.println("Received "+msg.getBody(String.class));
-			} catch (JMSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-	}
-	
-	
 	
 
 }

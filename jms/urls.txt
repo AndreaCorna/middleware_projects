@@ -1,5 +1,5 @@
-https://trippo.tk
-https://www.dropbox.com
-https://www.github.com
-https://www.google.com
+http://trippo.tk
+http://www.dropbox.com
+http://www.github.com
+http://www.google.com
 
