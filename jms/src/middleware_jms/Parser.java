@@ -23,6 +23,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * This class parsers the html file in order to obtain information about images in page html
+ * @author andrea
+ *
+ */
 public class Parser implements MessageListener{
 	
 	private Context context = null;
@@ -37,6 +42,9 @@ public class Parser implements MessageListener{
 		setup();
 	}
     
+    /**
+     * Setup connection and queue for class
+     */
 	private void setup(){
 		try {
 			context = Parser.getContext();			
@@ -54,7 +62,13 @@ public class Parser implements MessageListener{
 		
 	}
     
-
+	/**
+	 * Parse the webpage to find image that are send to be processed
+	 * @param webSiteUrl - url of the site
+	 * @param htmlPage - the html page
+	 * @param webSiteBase64 - url encode
+	 * @throws IOException
+	 */
 	private void parse(String webSiteUrl,File htmlPage, String webSiteBase64) throws IOException{
 		
 		Document doc = Jsoup.parse(htmlPage, "UTF-8", webSiteUrl);			

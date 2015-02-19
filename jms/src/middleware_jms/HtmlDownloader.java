@@ -23,7 +23,11 @@ import javax.naming.NamingException;
 
 import org.jsoup.Jsoup;
 
-
+/**
+ * This class downloads the html of a page and save it in S3
+ * @author andrea
+ *
+ */
 public class HtmlDownloader implements MessageListener{
 	
 	private Context context = null;
@@ -51,6 +55,9 @@ public class HtmlDownloader implements MessageListener{
 		
 	}
 	
+	/**
+	 * Setup of context and queue connection
+	 */
 	private void setup(){
 		try {
 			context = HtmlDownloader.getContext();			
@@ -68,6 +75,10 @@ public class HtmlDownloader implements MessageListener{
 		
 	}
 	
+	/**
+	 * Download the html file and save on S3
+	 * @param url - site url to download
+	 */
 	private void downloadPage(String url){
 		String html = null;
 		String name = null;

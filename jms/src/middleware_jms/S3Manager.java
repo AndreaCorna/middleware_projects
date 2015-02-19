@@ -19,11 +19,21 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 
+/**
+ * Class to manage upload and get operations of file from S3 amazon service
+ * @author andrea
+ *
+ */
 public class S3Manager {
 	
 	private String bucketName = "middlewarebucket";
 	
-		
+	/**
+	 * Method to upload a file on S3 service
+	 * @param file - file to upload
+	 * @param fileName - name of the file used as key 
+	 * @param directory - sub directory where upload the file
+	 */
 	public void uploadFile(File file,String fileName, String directory){
 
 		AmazonS3 s3client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain());
@@ -53,6 +63,12 @@ public class S3Manager {
         }
 	}
 	
+	/**
+	 * Get a file from S3 service
+	 * @param directory - sub directory 
+	 * @param id - id of file
+	 * @return
+	 */
 	public File getFile(String directory, String id){
 		File file = new File(id);
 		AmazonS3 s3Client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain());        

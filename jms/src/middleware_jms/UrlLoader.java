@@ -17,10 +17,11 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-
-
-
-
+/**
+ * Class that loads the urls of the webpages to save on S3
+ * @author andrea
+ *
+ */
 public class UrlLoader {
 	
 		
@@ -35,6 +36,10 @@ public class UrlLoader {
 		
 	}
 	
+	/**
+	 * Send all urls in a queue in order to process them
+	 * @throws NamingException
+	 */
 	public void loadURLInQueue() throws NamingException{
 		
 		List<String> urlsList = getUrlFromFile();
@@ -67,6 +72,10 @@ public class UrlLoader {
 		
 	}
 	
+	/**
+	 * Load urls from a file
+	 * @return list of string of url sites
+	 */
 	private List<String> getUrlFromFile(){
 		Charset charset = Charset.forName("UTF-8");
 		Path path = Paths.get(filePath);	
@@ -81,6 +90,9 @@ public class UrlLoader {
 		
 	}
 	
+	/**
+	 * Setup connection and queue for class
+	 */
 	private void setup(){
 		
 		try {
