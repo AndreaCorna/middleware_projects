@@ -34,7 +34,7 @@ public class HtmlDownloader implements MessageListener{
 	public void onMessage(Message msg){
 		try {
 			System.out.println("[HTMLDOWNLOADER] => Received "+msg.getBody(String.class));
-			downloadPage(msg.getBody(String.class));
+		//	downloadPage(msg.getBody(String.class));
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
