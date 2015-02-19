@@ -9,6 +9,7 @@ import javax.naming.NamingException;
 public class Main {
 
 	public static void main(String[] args) throws NamingException {
+		System.out.println(System.getProperty("javax.net.ssl.trustStore"));
 		HtmlDownloader httpDownloader = new HtmlDownloader();
 		UrlLoader urlLoader = new UrlLoader("./urls.txt");
 		urlLoader.loadURLInQueue();
