@@ -12,6 +12,9 @@ public class Main {
 		HtmlDownloader httpDownloader = new HtmlDownloader();
 		UrlLoader urlLoader = new UrlLoader("./urls.txt");
 		urlLoader.loadURLInQueue();
+		while(true){
+			
+		}
 		
 	}
 	
