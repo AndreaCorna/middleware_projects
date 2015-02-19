@@ -1,7 +1,11 @@
 package middleware_jms;
 
 
+import java.io.File;
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSConsumer;
@@ -60,15 +64,26 @@ public class HtmlDownloader implements MessageListener{
 	
 	private void downloadPage(String url){
 		String html = null;
+		String name = null;
 		try {
 			html = Jsoup.connect(url).get().html();
+			
+			PrintWriter out = new PrintWriter("tmp.txt");
+			out.print(html);
+			out.close();
+			File temporaryFile = new File("tmp.txt");
+			name = Base64.encodeBase64String(url.getBytes());
+
+			S3Manager manager = new S3Manager();
+			manager.uploadFile(temporaryFile,name);
+			jmsProducer.send(HTMLPageQueue, name);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("[HTMLDOWNLOADER] => send message "+ html);
+		//System.out.println("[HTMLDOWNLOADER] => send message "+ html);
 		
-		jmsProducer.send(HTMLPageQueue, html);
 	}
 	
 
