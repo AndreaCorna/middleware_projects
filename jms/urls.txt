@@ -1,4 +1,2 @@
-http://trippo.tk/UI
-http://www.dropbox.com
-http://www.github.com
-http://www.google.com
+http://google.it
+http://www.bbc.com/
