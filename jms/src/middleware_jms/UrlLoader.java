@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.nio.charset.Charset;
 
 import javax.jms.ConnectionFactory;
@@ -13,6 +14,7 @@ import javax.jms.JMSContext;
 import javax.jms.JMSProducer;
 import javax.jms.Queue;
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 
@@ -51,8 +53,9 @@ public class UrlLoader {
 		while (iterator.hasNext()){
 			String message =  iterator.next();
 			System.out.println("send message "+ message);
-		
-			jmsProducer.send(URLQueue, message);
+			if(message != null){
+				jmsProducer.send(URLQueue, message);
+			}
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -81,7 +84,7 @@ public class UrlLoader {
 	private void setup(){
 		
 		try {
-			context = Main.getContext();			
+			context = UrlLoader.getContext();			
 			jmsContext= ((ConnectionFactory) context.lookup("java:comp/DefaultJMSConnectionFactory")).createContext();
 			URLQueue = (Queue) context.lookup("URLQueue");
 			jmsProducer = jmsContext.createProducer();
@@ -93,6 +96,14 @@ public class UrlLoader {
 		
 		
 		
+	}
+	
+	private static Context getContext() throws NamingException {
+		Properties props = new Properties();
+		props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
+		props.setProperty("java.naming.factory.url.pkgs", "com.sun.enterprise.naming");
+		props.setProperty("java.naming.provider.url", "iiop://localhost:3700");
+		return new InitialContext(props);
 	}
 		
 	
