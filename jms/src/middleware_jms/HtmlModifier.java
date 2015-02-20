@@ -1,5 +1,6 @@
 package middleware_jms;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSConsumer;
 import javax.jms.JMSContext;
@@ -30,6 +32,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import sun.misc.BASE64Encoder;
 
 
 public class HtmlModifier implements MessageListener{
@@ -116,23 +120,24 @@ public class HtmlModifier implements MessageListener{
 	}
 	
 	private String encodeImageToBase64(File fileImage){
-	    InputStream ios = null;
-	    String encode = null;
-	    try {
-	        byte[] buffer = new byte[(int) fileImage.length()];
-	        ios = new FileInputStream(fileImage);
-	        ios.read(buffer);
-	        ios.close();
-	        encode = Base64.encodeBase64String(buffer);
-	       
-	    } catch (FileNotFoundException e) {
+	    BufferedImage bufferImage;
+	    String imageString = null;
+
+		try {
+			bufferImage = ImageIO.read(fileImage);
+			String type = fileImage.getName().substring(fileImage.getName().lastIndexOf(".")+1);
+	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(bufferImage, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+            BASE64Encoder encoder = new BASE64Encoder();
+            imageString = encoder.encode(imageBytes);
+            bos.close();
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-	    return encode;
+			e1.printStackTrace();
+		}
+		
+        return imageString;
 	}
 	
 	private static Context getContext() throws NamingException {
