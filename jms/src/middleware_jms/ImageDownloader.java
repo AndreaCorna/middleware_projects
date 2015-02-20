@@ -38,6 +38,9 @@ public class ImageDownloader implements MessageListener{
 		setup();
 	}
 	
+	/**
+	 * Setup of context and queue connection
+	 */
 	private void setup(){
 		try {
 			context = ImageDownloader.getContext();			
@@ -55,6 +58,11 @@ public class ImageDownloader implements MessageListener{
 		
 	}
 	
+	/**
+	 * Dowload image from site and save it on S3
+	 * @param string_url - url of image to download
+	 * @param webSiteBase64 - websiteurl base64 encode
+	 */
 	private void downloadImage(String string_url, String webSiteBase64) {
 		System.out.println("[IMAGES_DOWNLOADER] downloading image "+ string_url);
 		BufferedImage image = null;

@@ -3,14 +3,8 @@ package middleware_jms;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -26,8 +20,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.derby.iapi.services.io.FileUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -35,7 +27,12 @@ import org.jsoup.select.Elements;
 
 import sun.misc.BASE64Encoder;
 
-
+/**
+ * The class substitutes the img tags with the base64 encode in order to visualize
+ * image offline.
+ * @author andrea
+ *
+ */
 public class HtmlModifier implements MessageListener{
 	
 	
@@ -72,6 +69,9 @@ public class HtmlModifier implements MessageListener{
 		
 	}
 	
+    /**
+	 * Setup of context and queue connection
+	 */
 	private void setup(){
 		try {
 			context = HtmlModifier.getContext();			
@@ -87,6 +87,11 @@ public class HtmlModifier implements MessageListener{
 		
 	}
 	
+	/**
+	 * Substitude the img src url with the base64
+	 * @param webSiteBase64 - webSite url base64 encode
+	 * @param imageUrl - name image to substitute
+	 */
 	private void modifyPage(String webSiteBase64, String imageUrl){
 		
 		File htmlPage = new File(directory+"/"+webSiteBase64+".html");
@@ -119,6 +124,11 @@ public class HtmlModifier implements MessageListener{
 		
 	}
 	
+	/**
+	 * Get the string base64 of a image file
+	 * @param fileImage - file to convert
+	 * @return base64 string encode
+	 */
 	private String encodeImageToBase64(File fileImage){
 	    BufferedImage bufferImage;
 	    String imageString = null;
