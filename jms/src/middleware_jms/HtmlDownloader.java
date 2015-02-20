@@ -7,6 +7,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.jms.ConnectionFactory;
@@ -22,6 +23,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * This class downloads the html of a page and save it in S3
@@ -87,10 +91,25 @@ public class HtmlDownloader implements MessageListener{
 		try {
 			html = Jsoup.connect(url).get().html();
 			
+			Document doc = Jsoup.parse(html);
+			//Download css and insert into html
+	        Elements imports = doc.select("link[rel=stylesheet]");
+	        Iterator<Element> iterator = imports.iterator();
+			Element head = doc.select("head").first();
+			while (iterator.hasNext()) {
+				Element importLink =  iterator.next();
+				String link = importLink.attr("abs:href");
+				System.out.println("LINK => "+link);
+				String css = Jsoup.connect(link).get().html();
+				head.appendElement("style").text(css);
+				importLink.remove();
+				
+			}
 			PrintWriter out = new PrintWriter("index.html");
-			out.print(html);
+			out.print(doc.html());
 			out.close();
 			File temporaryFile = new File("index.html");
+
 			name = Base64.encodeBase64String(url.getBytes());
 
 			
