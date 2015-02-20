@@ -6,6 +6,7 @@ public class Main {
 
 	public static void main(String[] args) throws NamingException {
 		System.out.println(System.getProperty("javax.net.ssl.trustStore"));
+		HtmlModifier htmlModifier = new HtmlModifier();
 		ImageDownloader imageDownloader = new ImageDownloader();
 		Parser parser = new Parser();
 		HtmlDownloader httpDownloader = new HtmlDownloader();

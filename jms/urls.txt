@@ -1,2 +1,1 @@
-http://www.google.it
-http://www.corriere.it
+http://www.bbc.com

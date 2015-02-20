@@ -1,7 +1,14 @@
 package middleware_jms;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSConsumer;
 import javax.jms.JMSContext;
@@ -13,6 +20,19 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import sun.misc.BASE64Encoder;
+
+/**
+ * The class substitutes the img tags with the base64 encode in order to visualize
+ * image offline.
+ * @author andrea
+ *
+ */
 public class HtmlModifier implements MessageListener{
 	
 	
@@ -20,8 +40,15 @@ public class HtmlModifier implements MessageListener{
     private Queue LocalImagesQueue;
     private JMSContext jmsContext = null;
     private JMSConsumer jmsConsumer;
+    private S3Manager manager;
+    private String directory = "./output";
     
     public HtmlModifier(){
+    	manager = new S3Manager();
+    	File directoryOutput = new File(directory);
+    	if(!directoryOutput.exists()){
+    		directoryOutput.mkdir();
+    	}
     	setup();
     }
     
@@ -30,7 +57,10 @@ public class HtmlModifier implements MessageListener{
     	if(msg != null){
     		try {
     			System.out.println("[HTMLMODIFIER] => Received "+msg.getBody(String.class));
-    			
+    			String message = msg.getBody(String.class);
+				String base64  = message.substring(0, message.indexOf("/"));
+				String imageUrl = message.substring(message.indexOf("/")+1, message.length());
+				modifyPage(base64,imageUrl);
     		} catch (JMSException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
@@ -39,6 +69,9 @@ public class HtmlModifier implements MessageListener{
 		
 	}
 	
+    /**
+	 * Setup of context and queue connection
+	 */
 	private void setup(){
 		try {
 			context = HtmlModifier.getContext();			
@@ -54,6 +87,69 @@ public class HtmlModifier implements MessageListener{
 		
 	}
 	
+	/**
+	 * Substitude the img src url with the base64
+	 * @param webSiteBase64 - webSite url base64 encode
+	 * @param imageUrl - name image to substitute
+	 */
+	private void modifyPage(String webSiteBase64, String imageUrl){
+		
+		File htmlPage = new File(directory+"/"+webSiteBase64+".html");
+		if(!htmlPage.exists()){
+			htmlPage = manager.getFile(webSiteBase64,"index.html");
+		}
+		
+		File imageFile = manager.getFile(webSiteBase64, imageUrl);
+		
+		String encodedStringImage = encodeImageToBase64(imageFile);
+		
+		try {
+			Document doc = Jsoup.parse(htmlPage, "UTF-8");
+			Elements images = doc.select("img[src*="+imageUrl);
+			Iterator<Element> iterator = images.iterator();
+			
+			while (iterator.hasNext()) {
+				Element image =  iterator.next();
+				image.attr("src","data:image/jpg;base64,"+encodedStringImage);
+			}
+			PrintWriter out = new PrintWriter(directory+"/"+webSiteBase64+".html");
+			out.print(doc.html());
+			out.close();
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		
+		
+		
+	}
+	
+	/**
+	 * Get the string base64 of a image file
+	 * @param fileImage - file to convert
+	 * @return base64 string encode
+	 */
+	private String encodeImageToBase64(File fileImage){
+	    BufferedImage bufferImage;
+	    String imageString = null;
+
+		try {
+			bufferImage = ImageIO.read(fileImage);
+			String type = fileImage.getName().substring(fileImage.getName().lastIndexOf(".")+1);
+	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(bufferImage, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+            BASE64Encoder encoder = new BASE64Encoder();
+            imageString = encoder.encode(imageBytes);
+            bos.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+        return imageString;
+	}
+	
 	private static Context getContext() throws NamingException {
 		Properties props = new Properties();
 		props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
@@ -61,5 +157,6 @@ public class HtmlModifier implements MessageListener{
 		props.setProperty("java.naming.provider.url", "iiop://localhost:3700");
 		return new InitialContext(props);
 	}
-
+	
+	
 }

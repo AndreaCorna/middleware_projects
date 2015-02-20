@@ -30,11 +30,17 @@ public class ImageDownloader implements MessageListener{
     private JMSContext jmsContext = null;
     private JMSProducer jmsProducer;
     private JMSConsumer jmsConsumer;
+    private S3Manager manager;
+
 	
 	public ImageDownloader() {
+		manager = new S3Manager();
 		setup();
 	}
 	
+	/**
+	 * Setup of context and queue connection
+	 */
 	private void setup(){
 		try {
 			context = ImageDownloader.getContext();			
@@ -52,6 +58,11 @@ public class ImageDownloader implements MessageListener{
 		
 	}
 	
+	/**
+	 * Dowload image from site and save it on S3
+	 * @param string_url - url of image to download
+	 * @param webSiteBase64 - websiteurl base64 encode
+	 */
 	private void downloadImage(String string_url, String webSiteBase64) {
 		System.out.println("[IMAGES_DOWNLOADER] downloading image "+ string_url);
 		BufferedImage image = null;
@@ -78,9 +89,8 @@ public class ImageDownloader implements MessageListener{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			S3Manager manager = new S3Manager();
 			manager.uploadFile(outputfile, finalImageName,webSiteBase64);
-			jmsProducer.send(LocalImagesQueue, webSiteBase64);
+			jmsProducer.send(LocalImagesQueue, webSiteBase64+"/"+finalImageName);
 		
 
 		}
