@@ -30,8 +30,11 @@ public class ImageDownloader implements MessageListener{
     private JMSContext jmsContext = null;
     private JMSProducer jmsProducer;
     private JMSConsumer jmsConsumer;
+    private S3Manager manager;
+
 	
 	public ImageDownloader() {
+		manager = new S3Manager();
 		setup();
 	}
 	
@@ -78,9 +81,8 @@ public class ImageDownloader implements MessageListener{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			S3Manager manager = new S3Manager();
 			manager.uploadFile(outputfile, finalImageName,webSiteBase64);
-			jmsProducer.send(LocalImagesQueue, webSiteBase64);
+			jmsProducer.send(LocalImagesQueue, webSiteBase64+"/"+finalImageName);
 		
 
 		}

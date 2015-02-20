@@ -36,8 +36,10 @@ public class HtmlDownloader implements MessageListener{
     private JMSContext jmsContext = null;
     private JMSProducer jmsProducer;
     private JMSConsumer jmsConsumer;
+    private S3Manager manager;
 	
 	public HtmlDownloader(){
+		manager = new S3Manager();
 		setup();
 	}
 	
@@ -91,7 +93,7 @@ public class HtmlDownloader implements MessageListener{
 			File temporaryFile = new File("index.html");
 			name = Base64.encodeBase64String(url.getBytes());
 
-			S3Manager manager = new S3Manager();
+			
 			manager.uploadFile(temporaryFile,"index.html",name);
 			jmsProducer.send(HTMLPageQueue, name+"/index.html");
 

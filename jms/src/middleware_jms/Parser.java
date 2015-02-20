@@ -36,9 +36,11 @@ public class Parser implements MessageListener{
     private JMSContext jmsContext = null;
     private JMSProducer jmsProducer;
     private JMSConsumer jmsConsumer;
+    private S3Manager manager;
     
     
     public Parser() {
+		manager = new S3Manager();
 		setup();
 	}
     
@@ -94,7 +96,6 @@ public class Parser implements MessageListener{
 				String urlSite = Base64.decodeBase64(base64).toString();
 				
 				System.out.println("[PARSER] => Received "+msg.getBody(String.class) + " "+base64+ " "+name);
-				S3Manager manager = new S3Manager();
 				File htmlPage = manager.getFile(base64,name);
 				parse(urlSite, htmlPage, base64);
 			} catch (JMSException e) {
