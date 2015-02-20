@@ -85,7 +85,7 @@ public class HtmlModifier implements MessageListener{
 	
 	private void modifyPage(String webSiteBase64, String imageUrl){
 		
-		File htmlPage = new File(directory+"/ugo.html");
+		File htmlPage = new File(directory+"/"+webSiteBase64+".html");
 		if(!htmlPage.exists()){
 			htmlPage = manager.getFile(webSiteBase64,"index.html");
 		}
@@ -103,8 +103,8 @@ public class HtmlModifier implements MessageListener{
 				Element image =  iterator.next();
 				image.attr("src","data:image/jpg;base64,"+encodedStringImage);
 			}
-			PrintWriter out = new PrintWriter(doc.html());
-			out.print(htmlPage);
+			PrintWriter out = new PrintWriter(directory+"/"+webSiteBase64+".html");
+			out.print(doc.html());
 			out.close();
 			} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -116,36 +116,23 @@ public class HtmlModifier implements MessageListener{
 	}
 	
 	private String encodeImageToBase64(File fileImage){
-		ByteArrayOutputStream ous = null;
 	    InputStream ios = null;
+	    String encode = null;
 	    try {
 	        byte[] buffer = new byte[(int) fileImage.length()];
-	        ous = new ByteArrayOutputStream();
 	        ios = new FileInputStream(fileImage);
-	        int read = 0;
-	        while ( (read = ios.read(buffer)) != -1 ) {
-	            ous.write(buffer, 0, read);
-	        }
+	        ios.read(buffer);
+	        ios.close();
+	        encode = Base64.encodeBase64String(buffer);
+	       
 	    } catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally { 
-	        try {
-	             if ( ous != null ) 
-	                 ous.close();
-	        } catch ( IOException e) {
-	        }
-
-	        try {
-	             if ( ios != null ) 
-	                  ios.close();
-	        } catch ( IOException e) {
-	        }
-	    }
-	    return ous.toByteArray().toString();
+		} 
+	    return encode;
 	}
 	
 	private static Context getContext() throws NamingException {
