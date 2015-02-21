@@ -118,7 +118,7 @@ public class HtmlDownloader implements MessageListener{
 			manager.uploadFile(temporaryFile,nameFile,name);
 			DownloadToParserMessage message =  new DownloadToParserMessage(name, nameFile);
 			jmsProducer.send(HTMLPageQueue,  message);
-
+			temporaryFile.delete();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,6 +19,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import middleware_jms.messages.DownloadToParserMessage;
+import middleware_jms.messages.ParserToImageDownloaderMessage;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jsoup.Jsoup;
@@ -83,9 +84,9 @@ public class Parser implements MessageListener{
 			Element image =  iterator.next();
 			String url = image.absUrl("src");
 			System.out.println("[Parser] image absolute url "+url);
-			jmsProducer.send(ImagesQueue, webSiteBase64+"/"+url);
+			jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, url));
 		}
-				
+		htmlPage.delete();		
 	}
 	
 
