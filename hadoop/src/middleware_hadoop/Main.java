@@ -17,6 +17,8 @@ import org.apache.hadoop.util.ToolRunner;
 
 import pageviewers.PageViewerMapper;
 import pageviewers.PageViewerReducer;
+import videodowonloads.VideoDownloadsMapper;
+import videodowonloads.VideoDownloadsRreducer;
 
 import com.amazonaws.services.elastictranscoder.model.Job;
 
@@ -27,9 +29,30 @@ public class Main extends Configured implements Tool{
         System.exit(res);
 
 	}
+	private JobConf getVideoDownloadsJob(String[] args) {
+		Configuration conf = getConf();
+		
+        JobConf job = new JobConf(conf, Main.class);
+        job.setJobName("VideoDownloads");
+		
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+			
+        job.setMapperClass(VideoDownloadsMapper.class);
+        job.setCombinerClass(VideoDownloadsRreducer.class);
+        job.setReducerClass(VideoDownloadsRreducer.class);
+			
+        job.setInputFormat(TextInputFormat.class);
+        job.setOutputFormat(TextOutputFormat.class);
+		
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		
+		return job;	
+	}
 	
 	private JobConf getPageViewerJob(String[] args) {
-Configuration conf = getConf();
+		Configuration conf = getConf();
 		
         JobConf job = new JobConf(conf, Main.class);
         job.setJobName("PageViewer");
@@ -47,16 +70,14 @@ Configuration conf = getConf();
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		
-		return job;
-		
-		
+		return job;	
 	}
 
 
 	@Override
 	public int run(String[] arg0) throws Exception {
 		
-		JobConf pageViewerjob = getPageViewerJob(arg0);
+		JobConf pageViewerjob = getVideoDownloadsJob(arg0);
 		
 		
 		

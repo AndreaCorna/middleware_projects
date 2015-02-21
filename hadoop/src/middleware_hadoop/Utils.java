@@ -18,7 +18,7 @@ public class Utils {
 	public static void main(String[] args) throws NamingException {
 		List<String> records= Utils.getRecordsFromFile("./test.log");
 		for (String record : records) {
-			getDate(record);		
+			getVideo(record);		
 		}
 		
 		
@@ -40,6 +40,24 @@ public class Utils {
 			e.printStackTrace();
 		}
 		return urlsList;
+		
+	}
+	
+	public static String getVideo(String record){
+		Pattern pattern = Pattern.compile("Star_Wars_Kid\\w*\\.wmv");
+		Matcher matcher = pattern.matcher(record);
+	    String matched=null;
+
+		if (matcher.find())
+		{
+		    matched= matcher.group(0);	
+			System.out.println(matched);
+
+		}
+		
+		return matched;
+		
+	
 		
 	}
 	
