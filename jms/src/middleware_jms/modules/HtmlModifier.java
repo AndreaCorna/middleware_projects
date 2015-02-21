@@ -1,4 +1,4 @@
-package middleware_jms;
+package middleware_jms.modules;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
