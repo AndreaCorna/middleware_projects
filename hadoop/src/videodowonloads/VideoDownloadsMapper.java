@@ -13,22 +13,27 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
 public class VideoDownloadsMapper extends MapReduceBase implements
-		Mapper<LongWritable, Text, Text, IntWritable> {
+		Mapper<LongWritable, Text, Text, Text> {
 	
 	private final static IntWritable one = new IntWritable(1);
 
 
 	@Override
 	public void map(LongWritable key, Text value,
-			OutputCollector<Text, IntWritable> collector, Reporter arg3)
+			OutputCollector<Text, Text> collector, Reporter arg3)
 			throws IOException {
 		String record= value.toString();
-		String matched= Utils.getVideo(record);
-		if(matched!=null){
-			System.out.println("Mapper found value");
-			Text matchedText= new Text();
-			matchedText.set(matched.getBytes());
-			collector.collect(matchedText, one);
+		String matchedVideo= Utils.getVideo(record);
+		String matchedDate= Utils.getDate(record);
+
+		if(matchedVideo !=null && matchedDate!=null){
+			Text matchedVideoText= new Text();
+			matchedVideoText.set(matchedVideo.getBytes());
+			
+			Text matchedDateText= new Text();
+			matchedDateText.set(matchedDate.getBytes());
+			
+			collector.collect(matchedDateText, matchedVideoText);
 		}
 		
 	}

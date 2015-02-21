@@ -18,7 +18,7 @@ import org.apache.hadoop.util.ToolRunner;
 import pageviewers.PageViewerMapper;
 import pageviewers.PageViewerReducer;
 import videodowonloads.VideoDownloadsMapper;
-import videodowonloads.VideoDownloadsRreducer;
+import videodowonloads.VideoDownloadsReducer;
 
 import com.amazonaws.services.elastictranscoder.model.Job;
 
@@ -36,11 +36,10 @@ public class Main extends Configured implements Tool{
         job.setJobName("VideoDownloads");
 		
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
 			
         job.setMapperClass(VideoDownloadsMapper.class);
-        job.setCombinerClass(VideoDownloadsRreducer.class);
-        job.setReducerClass(VideoDownloadsRreducer.class);
+        job.setReducerClass(VideoDownloadsReducer.class);
 			
         job.setInputFormat(TextInputFormat.class);
         job.setOutputFormat(TextOutputFormat.class);

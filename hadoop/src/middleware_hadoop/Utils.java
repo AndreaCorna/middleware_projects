@@ -51,7 +51,6 @@ public class Utils {
 		if (matcher.find())
 		{
 		    matched= matcher.group(0);	
-			System.out.println(matched);
 
 		}
 		
@@ -69,10 +68,11 @@ public class Utils {
 
 		if (matcher.find())
 		{
-		    matched= matcher.group(0);		    
+		    matched= matcher.group(0);
+		    matched = matched.substring(1, matched.length()-1);
 		}
 		
-		return matched.substring(1, matched.length()-1);
+		return matched;
 		
 	}
 
