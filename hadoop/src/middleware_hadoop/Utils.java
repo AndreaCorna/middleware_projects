@@ -8,13 +8,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.NamingException;
 
 public class Utils {
 	
 	public static void main(String[] args) throws NamingException {
-		List<String> records= Utils.getRecordsFromFile("test.log");
+		List<String> records= Utils.getRecordsFromFile("./test.log");
 		for (String record : records) {
 			getDate(record);		
 		}
@@ -43,8 +45,16 @@ public class Utils {
 	
 	public static String getDate(String record){
 		
-		System.out.println(record);
-		return record;
+		Pattern pattern = Pattern.compile("\\[\\d{2}/\\w+/\\d{4}:");
+		Matcher matcher = pattern.matcher(record);
+	    String matched=null;
+
+		if (matcher.find())
+		{
+		    matched= matcher.group(0);		    
+		}
+		
+		return matched.substring(1, matched.length()-1);
 		
 	}
 
