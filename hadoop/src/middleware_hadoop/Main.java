@@ -22,7 +22,6 @@ import referralsperdomain.ReferralsPerDomainReducer;
 import videodowonloads.VideoDownloadsMapper;
 import videodowonloads.VideoDownloadsReducer;
 
-import com.amazonaws.services.elastictranscoder.model.Job;
 
 public class Main extends Configured implements Tool{
 
@@ -80,7 +79,6 @@ public class Main extends Configured implements Tool{
 		
 		JobConf pageViewerjob = getPageViewerJob(arg0);
 		JobConf videoDownloadJob = getVideoDownloadsJob(arg0);
-		
 		JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
 		
 		JobClient.runJob(pageViewerjob);

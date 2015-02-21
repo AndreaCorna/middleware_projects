@@ -20,6 +20,8 @@ import org.apache.hadoop.mapred.Reporter;
 public class ReferralsPerDomainMapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
 
     private static final DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    private static final String startDateString = "22/04/2003";
+    private static final String finalDateString = "30/05/2003";
 	private Date startDate;
 	private Date finalDate;
 	private final static IntWritable one = new IntWritable(1);
@@ -30,15 +32,17 @@ public class ReferralsPerDomainMapper extends MapReduceBase implements Mapper<Lo
 			OutputCollector<Text, IntWritable> collector, Reporter reporter)
 			throws IOException {
 		String matchedDomain = Utils.getDomain(record.toString());
+		//check if the request comes from a domain different from the local website
 		if(matchedDomain != null){
 			String date = Utils.getDate(record.toString());
+			//check if the date is between the start and final date
 			if(date != null){
 				DateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy");
 				Date dateLog = null;
 				try {
 					dateLog = formatter.parse(date);
-					startDate =  df.parse("22/04/2003");
-					finalDate = df.parse("30/05/2003");
+					startDate =  df.parse(startDateString);
+					finalDate = df.parse(finalDateString);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
