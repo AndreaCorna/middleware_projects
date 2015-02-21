@@ -15,10 +15,13 @@ import javax.jms.JMSContext;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import middleware_jms.messages.ImageDownloaderToHtmlModifierMessage;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -54,12 +57,12 @@ public class HtmlModifier implements MessageListener{
     
     @Override
 	public void onMessage(Message msg){
-    	if(msg != null){
+    	if(msg != null && msg instanceof ObjectMessage){
     		try {
-    			System.out.println("[HTMLMODIFIER] => Received "+msg.getBody(String.class));
-    			String message = msg.getBody(String.class);
-				String base64  = message.substring(0, message.indexOf("/"));
-				String imageUrl = message.substring(message.indexOf("/")+1, message.length());
+    			System.out.println("[HTMLMODIFIER] => Received "+msg.getBody(ImageDownloaderToHtmlModifierMessage.class));
+    			ImageDownloaderToHtmlModifierMessage message = msg.getBody(ImageDownloaderToHtmlModifierMessage.class);
+				String base64  = message.getBase64Encode();
+				String imageUrl = message.getFileImageName();
 				modifyPage(base64,imageUrl);
     		} catch (JMSException e) {
     			// TODO Auto-generated catch block

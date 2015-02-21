@@ -3,6 +3,8 @@ package middleware_jms.modules;
 
 import java.io.File;
 
+import middleware_jms.messages.DownloadToParserMessage;
+
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
@@ -112,10 +114,11 @@ public class HtmlDownloader implements MessageListener{
 
 			name = Base64.encodeBase64String(url.getBytes());
 
-			
-			manager.uploadFile(temporaryFile,"index.html",name);
-			jmsProducer.send(HTMLPageQueue, name+"/index.html");
-
+			String nameFile = "index.html";
+			manager.uploadFile(temporaryFile,nameFile,name);
+			DownloadToParserMessage message =  new DownloadToParserMessage(name, nameFile);
+			jmsProducer.send(HTMLPageQueue,  message);
+			temporaryFile.delete();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

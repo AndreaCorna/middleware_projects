@@ -12,10 +12,14 @@ import javax.jms.JMSException;
 import javax.jms.JMSProducer;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import middleware_jms.messages.DownloadToParserMessage;
+import middleware_jms.messages.ParserToImageDownloaderMessage;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jsoup.Jsoup;
@@ -80,22 +84,24 @@ public class Parser implements MessageListener{
 			Element image =  iterator.next();
 			String url = image.absUrl("src");
 			System.out.println("[Parser] image absolute url "+url);
-			jmsProducer.send(ImagesQueue, webSiteBase64+"/"+url);
+			jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, url));
 		}
-				
+		htmlPage.delete();		
 	}
 	
 
 	@Override
 	public void onMessage(Message msg) {
-		if(msg != null){
+		System.out.println("[PARSER] => Received "+msg.getClass());
+
+		if(msg != null && msg instanceof ObjectMessage){
 			try {
-				String message = msg.getBody(String.class);
-				String base64  = message.substring(0, message.lastIndexOf("/"));
-				String name = message.substring(message.lastIndexOf("/")+1, message.length());
+				DownloadToParserMessage message = msg.getBody(DownloadToParserMessage.class);
+				String base64  = message.getBase64Encode();
+				String name = message.getHtmlFileName();
 				String urlSite = Base64.decodeBase64(base64).toString();
 				
-				System.out.println("[PARSER] => Received "+msg.getBody(String.class) + " "+base64+ " "+name);
+				System.out.println("[PARSER] => Received "+msg.getBody(DownloadToParserMessage.class) + " "+base64+ " "+name);
 				File htmlPage = manager.getFile(base64,name);
 				parse(urlSite, htmlPage, base64);
 			} catch (JMSException e) {

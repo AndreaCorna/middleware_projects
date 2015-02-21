@@ -16,10 +16,14 @@ import javax.jms.JMSException;
 import javax.jms.JMSProducer;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import middleware_jms.messages.ImageDownloaderToHtmlModifierMessage;
+import middleware_jms.messages.ParserToImageDownloaderMessage;
 
 
 public class ImageDownloader implements MessageListener{
@@ -90,7 +94,7 @@ public class ImageDownloader implements MessageListener{
 				e.printStackTrace();
 			}
 			manager.uploadFile(outputfile, finalImageName,webSiteBase64);
-			jmsProducer.send(LocalImagesQueue, webSiteBase64+"/"+finalImageName);
+			jmsProducer.send(LocalImagesQueue, new ImageDownloaderToHtmlModifierMessage(webSiteBase64, finalImageName));
 		
 
 		}
@@ -101,13 +105,13 @@ public class ImageDownloader implements MessageListener{
 
 	@Override
 	public void onMessage(Message msg) {
-		if(msg != null){
+		if(msg != null && msg instanceof ObjectMessage){
 			try {
-				System.out.println("[IMAGES_DOWNLOADER] => Received "+msg.getBody(String.class));
+				System.out.println("[IMAGES_DOWNLOADER] => Received "+msg.getBody(ParserToImageDownloaderMessage.class));
 				
-				String message = msg.getBody(String.class);
-				String base64  = message.substring(0, message.indexOf("/"));
-				String imageUrl = message.substring(message.indexOf("/")+1, message.length());
+				ParserToImageDownloaderMessage message = msg.getBody(ParserToImageDownloaderMessage.class);
+				String base64  = message.getBase64Encode();
+				String imageUrl = message.getAbsoluteImageUrl();
 				downloadImage(imageUrl,base64);
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
