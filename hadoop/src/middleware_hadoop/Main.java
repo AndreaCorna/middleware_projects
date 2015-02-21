@@ -19,6 +19,8 @@ import pageviewers.PageViewerMapper;
 import pageviewers.PageViewerReducer;
 import referralsperdomain.ReferralsPerDomainMapper;
 import referralsperdomain.ReferralsPerDomainReducer;
+import videodowonloads.VideoDownloadsMapper;
+import videodowonloads.VideoDownloadsReducer;
 
 import com.amazonaws.services.elastictranscoder.model.Job;
 
@@ -29,9 +31,29 @@ public class Main extends Configured implements Tool{
         System.exit(res);
 
 	}
+	private JobConf getVideoDownloadsJob(String[] args) {
+		Configuration conf = getConf();
+		
+        JobConf job = new JobConf(conf, Main.class);
+        job.setJobName("VideoDownloads");
+		
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+			
+        job.setMapperClass(VideoDownloadsMapper.class);
+        job.setReducerClass(VideoDownloadsReducer.class);
+			
+        job.setInputFormat(TextInputFormat.class);
+        job.setOutputFormat(TextOutputFormat.class);
+		
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		
+		return job;	
+	}
 	
 	private JobConf getPageViewerJob(String[] args) {
-Configuration conf = getConf();
+		Configuration conf = getConf();
 		
         JobConf job = new JobConf(conf, Main.class);
         job.setJobName("PageViewer");
@@ -49,20 +71,20 @@ Configuration conf = getConf();
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		
-		return job;
-		
-		
+		return job;	
 	}
 
 
 	@Override
 	public int run(String[] arg0) throws Exception {
 		
-		//JobConf pageViewerjob = getPageViewerJob(arg0);
+		JobConf pageViewerjob = getPageViewerJob(arg0);
+		JobConf videoDownloadJob = getVideoDownloadsJob(arg0);
 		
 		JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
 		
-		//JobClient.runJob(pageViewerjob);
+		JobClient.runJob(pageViewerjob);
+		JobClient.runJob(videoDownloadJob);
 		JobClient.runJob(referralsPerDomain);
 
 		return 0;

@@ -45,6 +45,23 @@ public class Utils {
 		
 	}
 	
+	public static String getVideo(String record){
+		Pattern pattern = Pattern.compile("Star_Wars_Kid\\w*\\.wmv");
+		Matcher matcher = pattern.matcher(record);
+	    String matched=null;
+
+		if (matcher.find())
+		{
+		    matched= matcher.group(0);	
+
+		}
+		
+		return matched;
+		
+	
+		
+	}
+	
 	public static String getDate(String record){
 		
 		Pattern pattern = Pattern.compile("\\[\\d{2}/\\w+/\\d{4}:");
@@ -53,10 +70,11 @@ public class Utils {
 
 		if (matcher.find())
 		{
-		    matched= matcher.group(0);		    
+		    matched= matcher.group(0);
+		    matched = matched.substring(1, matched.length()-1);
 		}
 		
-		return matched.substring(1, matched.length()-1);
+		return matched;
 		
 	}
 	
@@ -67,12 +85,11 @@ public class Utils {
 
 		if (matcher.find())
 		{
-		    matched= matcher.group(0);	
+		    matched= matcher.group(0);
+		    matched = matched.substring(1, matched.length()-1);
 		}
-		if(matched == null){
-			return null;
-		}
-		return matched.substring(1, matched.length()-1);
+		
+		return matched;
 		
 	}
 

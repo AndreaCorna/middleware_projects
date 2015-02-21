@@ -18,7 +18,11 @@ public class PageViewerReducer extends MapReduceBase implements Reducer<Text, In
 			throws IOException {
 		int sum=0;
 		while (values.hasNext()) {
+			System.out.println("dasdsadsadsads adsad");
 			IntWritable intWritable = (IntWritable) values.next();
+			System.out.println(intWritable);
+
+			
 			sum += intWritable.get();	
 		}
 		output.collect(date, new IntWritable(sum));
