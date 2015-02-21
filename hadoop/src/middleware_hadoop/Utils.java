@@ -18,7 +18,9 @@ public class Utils {
 	public static void main(String[] args) throws NamingException {
 		List<String> records= Utils.getRecordsFromFile("./test.log");
 		for (String record : records) {
-			getDate(record);		
+		    System.out.println(record);
+
+			getDomain(record);		
 		}
 		
 		
@@ -54,6 +56,22 @@ public class Utils {
 		    matched= matcher.group(0);		    
 		}
 		
+		return matched.substring(1, matched.length()-1);
+		
+	}
+	
+	public static String getDomain(String record){
+		Pattern pattern = Pattern.compile("\"http://www(\\.\\w+)+/");
+		Matcher matcher = pattern.matcher(record);
+	    String matched=null;
+
+		if (matcher.find())
+		{
+		    matched= matcher.group(0);	
+		}
+		if(matched == null){
+			return null;
+		}
 		return matched.substring(1, matched.length()-1);
 		
 	}

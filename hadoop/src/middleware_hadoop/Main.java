@@ -17,6 +17,8 @@ import org.apache.hadoop.util.ToolRunner;
 
 import pageviewers.PageViewerMapper;
 import pageviewers.PageViewerReducer;
+import referralsperdomain.ReferralsPerDomainMapper;
+import referralsperdomain.ReferralsPerDomainReducer;
 
 import com.amazonaws.services.elastictranscoder.model.Job;
 
@@ -56,12 +58,38 @@ Configuration conf = getConf();
 	@Override
 	public int run(String[] arg0) throws Exception {
 		
-		JobConf pageViewerjob = getPageViewerJob(arg0);
+		//JobConf pageViewerjob = getPageViewerJob(arg0);
 		
+		JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
 		
-		
-		JobClient.runJob(pageViewerjob);
+		//JobClient.runJob(pageViewerjob);
+		JobClient.runJob(referralsPerDomain);
+
 		return 0;
+	}
+	
+	private JobConf getReferralsPerDomainJob(String[] args) {
+		Configuration conf = getConf();
+		
+        JobConf job = new JobConf(conf, Main.class);
+        job.setJobName("ReferralsPerDay");
+		
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+			
+        job.setMapperClass(ReferralsPerDomainMapper.class);
+        job.setCombinerClass(ReferralsPerDomainReducer.class);
+        job.setReducerClass(ReferralsPerDomainReducer.class);
+			
+        job.setInputFormat(TextInputFormat.class);
+        job.setOutputFormat(TextOutputFormat.class);
+		
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		
+		return job;
+		
+		
 	}
 
 }
