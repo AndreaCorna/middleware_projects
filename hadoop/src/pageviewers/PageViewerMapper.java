@@ -13,10 +13,10 @@ import org.apache.hadoop.mapred.Reporter;
 public class PageViewerMapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
 
 	@Override
-	public void map(LongWritable arg0, Text arg1,
-			OutputCollector<Text, IntWritable> arg2, Reporter arg3)
+	public void map(LongWritable key, Text value,
+			OutputCollector<Text, IntWritable> output, Reporter reporter)
 			throws IOException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
