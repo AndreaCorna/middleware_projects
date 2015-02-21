@@ -12,10 +12,13 @@ import javax.jms.JMSException;
 import javax.jms.JMSProducer;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import middleware_jms.messages.DownloadToParserMessage;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jsoup.Jsoup;
@@ -88,14 +91,16 @@ public class Parser implements MessageListener{
 
 	@Override
 	public void onMessage(Message msg) {
-		if(msg != null){
+		System.out.println("[PARSER] => Received "+msg.getClass());
+
+		if(msg != null && msg instanceof ObjectMessage){
 			try {
-				String message = msg.getBody(String.class);
-				String base64  = message.substring(0, message.lastIndexOf("/"));
-				String name = message.substring(message.lastIndexOf("/")+1, message.length());
+				DownloadToParserMessage message = msg.getBody(DownloadToParserMessage.class);
+				String base64  = message.getBase64Encode();
+				String name = message.getHtmlFileName();
 				String urlSite = Base64.decodeBase64(base64).toString();
 				
-				System.out.println("[PARSER] => Received "+msg.getBody(String.class) + " "+base64+ " "+name);
+				System.out.println("[PARSER] => Received "+msg.getBody(DownloadToParserMessage.class) + " "+base64+ " "+name);
 				File htmlPage = manager.getFile(base64,name);
 				parse(urlSite, htmlPage, base64);
 			} catch (JMSException e) {
