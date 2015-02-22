@@ -10,6 +10,7 @@ import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
@@ -19,6 +20,9 @@ import pageviewers.PageViewerMapper;
 import pageviewers.PageViewerReducer;
 import referralsperdomain.ReferralsPerDomainMapper;
 import referralsperdomain.ReferralsPerDomainReducer;
+import referringdomainsperday.ReferringDomainsCombiner;
+import referringdomainsperday.ReferringDomainsMapper;
+import referringdomainsperday.ReferringDomainsReducer;
 import videodowonloads.VideoDownloadsMapper;
 import videodowonloads.VideoDownloadsReducer;
 
@@ -80,10 +84,12 @@ public class Main extends Configured implements Tool{
 		JobConf pageViewerjob = getPageViewerJob(arg0);
 		JobConf videoDownloadJob = getVideoDownloadsJob(arg0);
 		JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
+		JobConf referringDomainsPerDayJob = getReferringDomainsPerDay(arg0);
 		
 		JobClient.runJob(pageViewerjob);
 		JobClient.runJob(videoDownloadJob);
 		JobClient.runJob(referralsPerDomain);
+		JobClient.runJob(referringDomainsPerDayJob);
 
 		return 0;
 	}
@@ -100,7 +106,8 @@ public class Main extends Configured implements Tool{
         job.setMapperClass(ReferralsPerDomainMapper.class);
         job.setCombinerClass(ReferralsPerDomainReducer.class);
         job.setReducerClass(ReferralsPerDomainReducer.class);
-			
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(Text.class);
         job.setInputFormat(TextInputFormat.class);
         job.setOutputFormat(TextOutputFormat.class);
 		
@@ -110,6 +117,31 @@ public class Main extends Configured implements Tool{
 		return job;
 		
 		
+	}
+	
+	private JobConf getReferringDomainsPerDay(String[] args){
+		Configuration conf = getConf();
+		
+        JobConf job = new JobConf(conf, Main.class);
+        job.setJobName("ReferringDomainsPerDay");
+		
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+			
+        job.setMapperClass(ReferringDomainsMapper.class);
+        job.setCombinerClass(ReferringDomainsCombiner.class);
+        job.setReducerClass(ReferringDomainsReducer.class);
+			
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(Text.class);
+        
+        job.setInputFormat(TextInputFormat.class);
+        job.setOutputFormat(TextOutputFormat.class);
+		
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		
+		return job;	
 	}
 
 }
