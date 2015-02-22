@@ -10,7 +10,6 @@ import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
@@ -72,7 +71,7 @@ public class Main extends Configured implements Tool{
         job.setOutputFormat(TextOutputFormat.class);
 		
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileOutputFormat.setOutputPath(job, new Path(args[2]));
 		
 		return job;	
 	}
@@ -106,13 +105,11 @@ public class Main extends Configured implements Tool{
         job.setMapperClass(ReferralsPerDomainMapper.class);
         job.setCombinerClass(ReferralsPerDomainReducer.class);
         job.setReducerClass(ReferralsPerDomainReducer.class);
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
         job.setInputFormat(TextInputFormat.class);
         job.setOutputFormat(TextOutputFormat.class);
 		
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileOutputFormat.setOutputPath(job, new Path(args[3]));
 		
 		return job;
 		
@@ -139,7 +136,7 @@ public class Main extends Configured implements Tool{
         job.setOutputFormat(TextOutputFormat.class);
 		
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileOutputFormat.setOutputPath(job, new Path(args[4]));
 		
 		return job;	
 	}
