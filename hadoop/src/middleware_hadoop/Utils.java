@@ -84,7 +84,7 @@ public class Utils {
 		if (matcher.find())
 		{
 		    matched= matcher.group(0);
-		    matched = matched.substring(1, matched.length()-1);
+		    matched = matched.substring(1, matched.length()-1).toLowerCase();
 		}
 		
 		return matched;
