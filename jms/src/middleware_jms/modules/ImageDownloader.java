@@ -68,7 +68,7 @@ public class ImageDownloader implements MessageListener{
 	 * @param webSiteBase64 - websiteurl base64 encode
 	 */
 	private void downloadImage(String string_url, String webSiteBase64) {
-		System.out.println("[IMAGES_DOWNLOADER] downloading image "+ string_url);
+		System.out.println("[IMAGES_DOWNLOADER"+this+"] downloading image "+ string_url);
 		BufferedImage image = null;
 		try {
 		    URL url = new URL(string_url);
