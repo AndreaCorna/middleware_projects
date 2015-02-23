@@ -21,7 +21,7 @@ import middleware_jms.modules.Parser;
 import middleware_jms.modules.UrlLoader;
 
 public class MonitoringTool implements Runnable{
-	private static final Integer THRESHOLD = 3;
+	private static final Integer THRESHOLD = 30;
 	
 	QueueBrowser URLQueueBrowser;
 	QueueBrowser HTMLPageQueueBrowser;

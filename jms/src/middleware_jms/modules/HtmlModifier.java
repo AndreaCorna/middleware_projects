@@ -121,7 +121,8 @@ public class HtmlModifier implements MessageListener{
 			} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	
+		}
+		imageFile.delete();
 		
 		
 		
