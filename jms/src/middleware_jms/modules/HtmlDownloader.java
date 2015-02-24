@@ -107,12 +107,13 @@ public class HtmlDownloader implements MessageListener{
 				importLink.remove();
 				
 			}
-			PrintWriter out = new PrintWriter("index.html");
+			name = Base64.encodeBase64String(url.getBytes());
+
+			PrintWriter out = new PrintWriter(name+".html");
 			out.print(doc.html());
 			out.close();
-			File temporaryFile = new File("index.html");
+			File temporaryFile = new File(name+".html");
 
-			name = Base64.encodeBase64String(url.getBytes());
 
 			String nameFile = "index.html";
 			manager.uploadFile(temporaryFile,nameFile,name);
