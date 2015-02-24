@@ -1,1 +1,1 @@
-time mpirun -np $@ --hostfile hostfile main
+time mpirun -np $1 --hostfile hostfile main $2

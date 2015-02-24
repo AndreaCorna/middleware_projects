@@ -29,6 +29,12 @@ int main( int argc, char** argv ){
 	uchar *buffer_image;
 	int nrows,ncol,channels,buffer_size,item_for_process;
 	
+	if(argc<2){
+		printf("Insert the number of threads");
+		exit(0);
+	}
+	int num_threads = atoi(argv[1]);
+	
 	if(rank == 0){
 		image = imread(IMAGE_PATH,1);
 		buffer_image=image.ptr();
@@ -51,6 +57,7 @@ int main( int argc, char** argv ){
     MPI_Scatter(buffer_image, item_for_process, MPI_UNSIGNED_CHAR, gamma_corrected_buffer,item_for_process, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
     
 	/*gamma correction with omp elaboration*/
+	omp_set_num_threads(num_threads);
 	#pragma omp parallel for shared(gamma_corrected_buffer)
 		for(i=0;i < item_for_process;i++){
 			gamma_corrected_buffer[i] = gammaCorrectPixel(gamma_corrected_buffer[i],inverse_gamma);		
