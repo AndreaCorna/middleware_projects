@@ -87,7 +87,7 @@ public class ImageDownloader implements MessageListener{
 		if (matcher.find())
 		{
 		    String finalImageName= matcher.group(0);
-			String extension = string_url.substring(string_url.lastIndexOf(".")+1);	
+			String extension = finalImageName.substring(finalImageName.lastIndexOf(".")+1);	
 			System.out.println("[IMAGES_DOWNLOADER] Image name "+ finalImageName);
 			System.out.println("[IMAGES_DOWNLOADER] extension  "+ extension);
 
@@ -112,7 +112,7 @@ public class ImageDownloader implements MessageListener{
 	public void onMessage(Message msg) {
 		if(msg != null && msg instanceof ObjectMessage){
 			try {
-				System.out.println("[IMAGES_DOWNLOADER] => Received "+msg.getBody(ParserToImageDownloaderMessage.class));
+				System.out.println("[IMAGES_DOWNLOADER"+this+"] => Received "+msg.getBody(ParserToImageDownloaderMessage.class));
 				
 				ParserToImageDownloaderMessage message = msg.getBody(ParserToImageDownloaderMessage.class);
 				String base64  = message.getBase64Encode();

@@ -124,7 +124,7 @@ public class Parser implements MessageListener{
 			}
 			
 			catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("[PARSER] Failed parsing page");
 				e.printStackTrace();
 			}
 		}

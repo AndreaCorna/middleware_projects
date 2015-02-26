@@ -22,6 +22,8 @@ import middleware_jms.modules.UrlLoader;
 
 public class MonitoringTool implements Runnable{
 	private static final Integer THRESHOLD = 30;
+
+	private static final int MAX_INSTANCES = 15;
 	
 	QueueBrowser URLQueueBrowser;
 	QueueBrowser HTMLPageQueueBrowser;
@@ -158,7 +160,9 @@ public class MonitoringTool implements Runnable{
 		if (numberOfMessages>THRESHOLD){
 			System.out.println("Incrementing object in "+class1.getCanonicalName());
 			ArrayList arrayList = hashMap.get(class1);
-			arrayList.add(class1.newInstance());		
+			if (arrayList.size()<MAX_INSTANCES){
+				arrayList.add(class1.newInstance());
+			}
 			
 		}
 		else if(numberOfMessages ==0){
