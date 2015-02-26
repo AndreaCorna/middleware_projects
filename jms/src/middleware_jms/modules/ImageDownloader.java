@@ -35,10 +35,15 @@ public class ImageDownloader implements MessageListener{
     private JMSProducer jmsProducer;
     private JMSConsumer jmsConsumer;
     private S3Manager manager;
+    private String directory = "./imageDownload";
 
 	
 	public ImageDownloader() {
 		manager = new S3Manager();
+		File directoryOutput = new File(directory);
+    	if(!directoryOutput.exists()){
+    		directoryOutput.mkdir();
+    	}
 		setup();
 	}
 	
@@ -87,7 +92,7 @@ public class ImageDownloader implements MessageListener{
 			System.out.println("[IMAGES_DOWNLOADER] extension  "+ extension);
 
 
-			File outputfile = new File("./imageDownload/"+finalImageName);
+			File outputfile = new File(directory+"/"+finalImageName);
 			try {
 				ImageIO.write(image, extension, outputfile);
 			} catch (IOException e) {

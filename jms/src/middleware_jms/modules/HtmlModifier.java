@@ -96,13 +96,17 @@ public class HtmlModifier implements MessageListener{
 	 * @param imageUrl - name image to substitute
 	 */
 	private void modifyPage(String webSiteBase64, String imageUrl){
+		File directoryOutput = new File(directory+"/"+webSiteBase64);
+    	if(!directoryOutput.exists()){
+    		directoryOutput.mkdir();
+    	}
 		
-		File htmlPage = new File(directory+"/"+webSiteBase64+".html");
+		File htmlPage = new File(directory+"/"+webSiteBase64+"/"+"index.html");
 		if(!htmlPage.exists()){
-			htmlPage = manager.getFile(webSiteBase64,"index.html");
+			htmlPage = manager.getFile(webSiteBase64,"index.html",directory+"/"+webSiteBase64);
 		}
 		
-		File imageFile = manager.getFile(webSiteBase64, imageUrl);
+		File imageFile = manager.getFile(webSiteBase64, imageUrl,directory+"/"+webSiteBase64);
 		
 		String encodedStringImage = encodeImageToBase64(imageFile);
 		
@@ -115,7 +119,7 @@ public class HtmlModifier implements MessageListener{
 				Element image =  iterator.next();
 				image.attr("src","data:image/jpg;base64,"+encodedStringImage);
 			}
-			PrintWriter out = new PrintWriter(directory+"/"+webSiteBase64+".html");
+			PrintWriter out = new PrintWriter(directory+"/"+webSiteBase64+"/"+"index.html");
 			out.print(doc.html());
 			out.close();
 			} catch (IOException e) {

@@ -41,10 +41,16 @@ public class Parser implements MessageListener{
     private JMSProducer jmsProducer;
     private JMSConsumer jmsConsumer;
     private S3Manager manager;
+    private String directory = "./parser";
+
     
     
     public Parser() {
 		manager = new S3Manager();
+		File directoryOutput = new File(directory);
+    	if(!directoryOutput.exists()){
+    		directoryOutput.mkdir();
+    	}
 		setup();
 	}
     
@@ -101,9 +107,17 @@ public class Parser implements MessageListener{
 				String name = message.getHtmlFileName();
 				String urlSite = Base64.decodeBase64(base64).toString();
 				
+				File directoryOutput = new File(directory+"/"+urlSite);
+		    	if(!directoryOutput.exists()){
+		    		directoryOutput.mkdir();
+		    	}
+				
+				
 				System.out.println("[PARSER] => Received "+msg.getBody(DownloadToParserMessage.class) + " "+base64+ " "+name);
-				File htmlPage = manager.getFile(base64,name);
+				File htmlPage = manager.getFile(base64,name,directory+"/"+urlSite);
 				parse(urlSite, htmlPage, base64);
+				htmlPage.delete();
+				directoryOutput.delete();
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

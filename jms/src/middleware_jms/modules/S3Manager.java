@@ -69,8 +69,14 @@ public class S3Manager {
 	 * @param id - id of file
 	 * @return
 	 */
-	public File getFile(String directory, String id){
-		File file = new File(id);
+	public File getFile(String directory, String id,String path){
+		File file = null;
+
+		if(path == null){
+			file = new File(id);
+		}else{
+			file = new File(path+"/"+id);
+		}
 		AmazonS3 s3Client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain());        
 		S3Object object = s3Client.getObject(
 		                  new GetObjectRequest(bucketName, directory+"/"+id));
