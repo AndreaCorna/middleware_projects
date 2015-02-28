@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import middleware_hadoop.Utils;
 
@@ -32,7 +33,8 @@ public class ReferringDomainsMapper extends MapReduceBase implements Mapper<Long
 			String date = Utils.getDate(record.toString());
 			//check if the date is between the start and final date
 			if(date != null){
-				DateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy");
+				DateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy",Locale.ENGLISH);
+				
 				Date dateLog = null;
 				try {
 					dateLog = formatter.parse(date);
