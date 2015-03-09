@@ -34,7 +34,7 @@ import org.jsoup.select.Elements;
  * @author andrea
  *
  */
-public class HtmlDownloader implements MessageListener{
+public class HtmlDownloader implements MessageListener,Module{
 	
 	private Context context = null;
     private Queue URLQueue;
