@@ -20,7 +20,8 @@ import middleware_jms.modules.Module;
 public class MonitoringToolModule implements Runnable {
 	
 
-	private static final int MAX_INSTANCES = 15;
+	private static final int MAX_INSTANCES = 100;
+	private static final int MIN_INSTANCES = 10;
 	private QueueBrowser queueBrowser;
 	private ArrayList<Module> modulesList;
 	private Integer threshold;
@@ -34,8 +35,9 @@ public class MonitoringToolModule implements Runnable {
 		modulesList = new ArrayList<>();
 		
 		try {
-				
-			modulesList.add((Module)moduleClass.newInstance());
+			for(int i= 0; i < MIN_INSTANCES; i++){
+				modulesList.add((Module)moduleClass.newInstance());
+			}
 			context = getContext();
 			jmsContext = ((ConnectionFactory) context.lookup("java:comp/DefaultJMSConnectionFactory")).createContext();
 			Queue queue = (Queue) context.lookup(queueName);
@@ -115,7 +117,7 @@ public class MonitoringToolModule implements Runnable {
 			
 		}
 		else if(numberOfMessages ==0){
-			if(modulesList.size()>1){
+			if(modulesList.size()>MIN_INSTANCES){
 				System.out.println("Decrementing object in "+moduleClass.getCanonicalName());
 
 				modulesList.remove(modulesList.size()-1);

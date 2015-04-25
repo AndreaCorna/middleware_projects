@@ -1,2 +1,6 @@
-http://www.bbc.com
-http://www.corriere.it
+http://www.wired.it
+http://www.ebay.it
+http://www.bookzz.org
+http://www.arduino.cc
+http://www.edition.cnn.com
+http://www.trenord.it
