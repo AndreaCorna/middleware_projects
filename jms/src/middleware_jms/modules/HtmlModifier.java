@@ -36,7 +36,7 @@ import sun.misc.BASE64Encoder;
  * @author andrea
  *
  */
-public class HtmlModifier implements MessageListener{
+public class HtmlModifier implements MessageListener,Module{
 	
 	
 	private Context context = null;

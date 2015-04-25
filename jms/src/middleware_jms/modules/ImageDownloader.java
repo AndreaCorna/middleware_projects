@@ -26,7 +26,7 @@ import middleware_jms.messages.ImageDownloaderToHtmlModifierMessage;
 import middleware_jms.messages.ParserToImageDownloaderMessage;
 
 
-public class ImageDownloader implements MessageListener{
+public class ImageDownloader implements MessageListener,Module{
 	
 	private Context context = null;
     private Queue LocalImagesQueue;

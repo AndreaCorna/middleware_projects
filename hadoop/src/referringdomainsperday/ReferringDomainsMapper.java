@@ -46,7 +46,7 @@ public class ReferringDomainsMapper extends MapReduceBase implements Mapper<Long
 				}
 				if(dateLog.before(finalDate) && dateLog.after(startDate)){
 					Text dateText = new Text();
-					dateText.set(dateLog.toString().getBytes());
+					dateText.set(formatter.format(dateLog).getBytes());
 					Text matchedDomainText = new Text();
 					matchedDomainText.set(matchedDomain.getBytes());
 					collector.collect(dateText, matchedDomainText);

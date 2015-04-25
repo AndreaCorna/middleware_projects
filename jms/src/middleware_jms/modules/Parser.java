@@ -32,7 +32,7 @@ import org.jsoup.select.Elements;
  * @author andrea
  *
  */
-public class Parser implements MessageListener{
+public class Parser implements MessageListener,Module{
 	
 	private Context context = null;
     private Queue HTMLPageQueue;
