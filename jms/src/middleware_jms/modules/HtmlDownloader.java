@@ -102,8 +102,13 @@ public class HtmlDownloader implements MessageListener,Module{
 				Element importLink =  iterator.next();
 				String link = importLink.attr("abs:href");
 				System.out.println("LINK => "+link);
-				String css = Jsoup.connect(link).get().html();
-				head.appendElement("style").text(css);
+				try{
+					String css = Jsoup.connect(link).get().html();
+					head.appendElement("style").text(css);
+
+				}catch(IllegalArgumentException e){
+					
+				}
 				importLink.remove();
 				
 			}

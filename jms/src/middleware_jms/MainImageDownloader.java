@@ -5,7 +5,7 @@ import middleware_jms.modules.ImageDownloader;
 public class MainImageDownloader {
 
 	public static void main(String[] args) throws InterruptedException {
-		MonitoringToolModule imageDownloaderMonitor = new MonitoringToolModule(ImageDownloader.class, "ImagesQueue", 30);
+		MonitoringToolModule imageDownloaderMonitor = new MonitoringToolModule(ImageDownloader.class, "ImagesQueue", 10);
 		Thread thread = new Thread(imageDownloaderMonitor);
 		thread.start();
 		thread.join();
