@@ -34,7 +34,9 @@ public class Main extends Configured implements Tool{
 
 	}
 	private JobConf getVideoDownloadsJob(String[] args) {
-		Configuration conf = getConf();
+		Configuration conf = new Configuration(getConf());
+		conf.set("mapreduce.output.textoutputformat.separator", ",");
+
 		
         JobConf job = new JobConf(conf, Main.class);
         job.setJobName("VideoDownloads");
@@ -56,6 +58,8 @@ public class Main extends Configured implements Tool{
 	
 	private JobConf getPageViewerJob(String[] args) {
 		Configuration conf = getConf();
+		conf.set("mapreduce.output.textoutputformat.separator", ",");
+
 		
         JobConf job = new JobConf(conf, Main.class);
         job.setJobName("PageViewer");
