@@ -151,7 +151,7 @@ public class HtmlModifier implements MessageListener,Module{
             imageString = encoder.encode(imageBytes);
             bos.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			System.out.println("Malformed file " +fileImage.getName());
 			e1.printStackTrace();
 		}
 		

@@ -82,7 +82,7 @@ public class ImageDownloader implements MessageListener,Module{
 		}
 		
 		String imageName= string_url.substring(string_url.lastIndexOf("/")+1);
-		Pattern pattern = Pattern.compile("\\w+\\.(jpg|png|gif)");
+		Pattern pattern = Pattern.compile(".+\\.(jpg|png|gif)");
 		Matcher matcher = pattern.matcher(imageName);
 		if (matcher.find())
 		{
