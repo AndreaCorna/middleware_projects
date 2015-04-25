@@ -89,8 +89,17 @@ public class Parser implements MessageListener,Module{
 		while (iterator.hasNext()) {
 			Element image =  iterator.next();
 			String url = image.absUrl("src");
-			System.out.println("[Parser] image absolute url "+url);
-			jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, url));
+			String dataUrl = image.absUrl("data-src");
+			if(!url.isEmpty()){
+				System.out.println("[Parser] image absolute url "+url);
+
+				jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, url));
+			}else if(!dataUrl.isEmpty()){
+				System.out.println("[Parser] image absolute url "+url);
+
+				jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, dataUrl));
+			}
+			//
 		}
 		htmlPage.delete();		
 	}
