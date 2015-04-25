@@ -112,7 +112,7 @@ public class HtmlModifier implements MessageListener,Module{
 		
 		try {
 			Document doc = Jsoup.parse(htmlPage, "UTF-8");
-			Elements images = doc.select("img[src*="+imageUrl);
+			Elements images = doc.select("img[data-src|src*="+imageUrl);
 			Iterator<Element> iterator = images.iterator();
 			
 			while (iterator.hasNext()) {
