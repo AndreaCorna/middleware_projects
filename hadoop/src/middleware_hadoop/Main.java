@@ -88,14 +88,14 @@ public class Main extends Configured implements Tool{
 	public int run(String[] arg0) throws Exception {
 		
 		JobConf pageViewerjob = getPageViewerJob(arg0);
-	//	JobConf videoDownloadJob = getVideoDownloadsJob(arg0);
-	//	JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
-	//	JobConf referringDomainsPerDayJob = getReferringDomainsPerDay(arg0);
+		JobConf videoDownloadJob = getVideoDownloadsJob(arg0);
+		JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
+		JobConf referringDomainsPerDayJob = getReferringDomainsPerDay(arg0);
 		
 		JobClient.runJob(pageViewerjob);
-	//	JobClient.runJob(videoDownloadJob);
-	//	JobClient.runJob(referralsPerDomain);
-	//	JobClient.runJob(referringDomainsPerDayJob);
+		JobClient.runJob(videoDownloadJob);
+		JobClient.runJob(referralsPerDomain);
+		JobClient.runJob(referringDomainsPerDayJob);
 
 		return 0;
 	}
