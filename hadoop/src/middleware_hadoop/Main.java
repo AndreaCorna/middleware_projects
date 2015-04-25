@@ -35,7 +35,8 @@ public class Main extends Configured implements Tool{
 	}
 	private JobConf getVideoDownloadsJob(String[] args) {
 		Configuration conf = new Configuration(getConf());
-		conf.set("mapreduce.output.textoutputformat.separator", ",");
+//Works on mac			conf.set("mapreduce.output.textoutputformat.separator", ",");
+		conf.set("mapreduce.textoutputformat.separator",",");
 
 		
         JobConf job = new JobConf(conf, Main.class);
@@ -58,7 +59,9 @@ public class Main extends Configured implements Tool{
 	
 	private JobConf getPageViewerJob(String[] args) {
 		Configuration conf = getConf();
-		conf.set("mapreduce.output.textoutputformat.separator", ",");
+//Works on mac		conf.set("mapreduce.output.textoutputformat.separator", ",");
+		conf.set("mapreduce.textoutputformat.separator",",");
+
 
 		
         JobConf job = new JobConf(conf, Main.class);
@@ -85,14 +88,14 @@ public class Main extends Configured implements Tool{
 	public int run(String[] arg0) throws Exception {
 		
 		JobConf pageViewerjob = getPageViewerJob(arg0);
-		JobConf videoDownloadJob = getVideoDownloadsJob(arg0);
-		JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
-		JobConf referringDomainsPerDayJob = getReferringDomainsPerDay(arg0);
+	//	JobConf videoDownloadJob = getVideoDownloadsJob(arg0);
+	//	JobConf referralsPerDomain = getReferralsPerDomainJob(arg0);
+	//	JobConf referringDomainsPerDayJob = getReferringDomainsPerDay(arg0);
 		
 		JobClient.runJob(pageViewerjob);
-		JobClient.runJob(videoDownloadJob);
-		JobClient.runJob(referralsPerDomain);
-		JobClient.runJob(referringDomainsPerDayJob);
+	//	JobClient.runJob(videoDownloadJob);
+	//	JobClient.runJob(referralsPerDomain);
+	//	JobClient.runJob(referringDomainsPerDayJob);
 
 		return 0;
 	}
