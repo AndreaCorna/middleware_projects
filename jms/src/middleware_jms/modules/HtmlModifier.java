@@ -112,7 +112,13 @@ public class HtmlModifier implements MessageListener,Module{
 		
 		try {
 			Document doc = Jsoup.parse(htmlPage, "UTF-8");
-			Elements images = doc.select("img[data-src|src*="+imageUrl);
+		
+			String match= "img[src*="+imageUrl+"]";
+			System.out.println("Searching for "+imageUrl+ " trying to match "+match);		
+			Elements images = doc.select(match);
+			if(images.isEmpty()){
+				System.out.println("wasn't able to find image "+ imageUrl);
+			}
 			Iterator<Element> iterator = images.iterator();
 			
 			while (iterator.hasNext()) {
@@ -140,7 +146,7 @@ public class HtmlModifier implements MessageListener,Module{
 	private String encodeImageToBase64(File fileImage){
 	    BufferedImage bufferImage;
 	    String imageString = null;
-
+	    
 		try {
 			bufferImage = ImageIO.read(fileImage);
 			String type = fileImage.getName().substring(fileImage.getName().lastIndexOf(".")+1);
@@ -154,6 +160,7 @@ public class HtmlModifier implements MessageListener,Module{
 			System.out.println("Malformed file " +fileImage.getName());
 			e1.printStackTrace();
 		}
+		
 		
         return imageString;
 	}

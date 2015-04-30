@@ -111,17 +111,21 @@ public class ImageDownloader implements MessageListener,Module{
 	@Override
 	public void onMessage(Message msg) {
 		if(msg != null && msg instanceof ObjectMessage){
+			
 			try {
+				
 				System.out.println("[IMAGES_DOWNLOADER"+this+"] => Received "+msg.getBody(ParserToImageDownloaderMessage.class));
 				
 				ParserToImageDownloaderMessage message = msg.getBody(ParserToImageDownloaderMessage.class);
 				String base64  = message.getBase64Encode();
 				String imageUrl = message.getAbsoluteImageUrl();
 				downloadImage(imageUrl,base64);
+				
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 		
 		

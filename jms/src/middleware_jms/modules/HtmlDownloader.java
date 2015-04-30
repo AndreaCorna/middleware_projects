@@ -52,6 +52,7 @@ public class HtmlDownloader implements MessageListener,Module{
 	@Override
 	public void onMessage(Message msg){
 		if(msg != null){
+			
 			try {
 				System.out.println("[HTMLDOWNLOADER] => Received "+msg.getBody(String.class));
 			    downloadPage(msg.getBody(String.class));
@@ -59,6 +60,7 @@ public class HtmlDownloader implements MessageListener,Module{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 		
 	}
