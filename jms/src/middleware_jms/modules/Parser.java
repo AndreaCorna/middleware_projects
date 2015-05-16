@@ -84,8 +84,8 @@ public class Parser implements MessageListener,Module{
 	 */
 	private void parse(String webSiteUrl,File htmlPage, String webSiteBase64) throws IOException{
 		
-		Document doc = Jsoup.parse(htmlPage, "UTF-8", webSiteUrl);	
-		System.out.println("[Parser] Website URI"+Base64.decodeBase64(webSiteBase64));
+		Document doc = Jsoup.parse(htmlPage, "UTF-8", Base64.decodeBase64(webSiteBase64).toString());	
+		System.out.println("[Parser] Website URI"+Base64.decodeBase64(webSiteBase64).toString());
 		doc.setBaseUri(webSiteUrl);
 		Elements images = doc.select("img");
 		Iterator<Element> iterator = images.iterator();
@@ -124,15 +124,18 @@ public class Parser implements MessageListener,Module{
 				String base64  = message.getBase64Encode();
 				String name = message.getHtmlFileName();
 				String urlSite = message.getUrlSite();
+				String base64url = Base64.decodeBase64(base64).toString();
 				
-				File directoryOutput = new File(directory+"/"+urlSite);
+				
+				
+				File directoryOutput = new File(directory+"/"+base64url);
 		    	if(!directoryOutput.exists()){
 		    		directoryOutput.mkdir();
 		    	}
 				
 				
 				System.out.println("[PARSER] => Received "+msg.getBody(DownloadToParserMessage.class) + " "+base64+ " "+name);
-				File htmlPage = manager.getFile(base64,name,directory+"/"+urlSite);
+				File htmlPage = manager.getFile(base64,name,directory+"/"+base64url);
 				parse(urlSite, htmlPage, base64);
 				htmlPage.delete();
 				directoryOutput.delete();
