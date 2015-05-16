@@ -109,7 +109,7 @@ public class Parser implements MessageListener,Module{
 		writer.close();
 		manager.uploadFile(new File(directory+"/list_images_"+webSiteBase64+".txt"), "list_image.txt", webSiteBase64);//uploading the file list_images_base64.txt on S3 with name list_image
 		System.out.println("[PARSER]sending message to Image downloader");
-		jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, "list_image.txt"));
+		jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, "list_image.txt",webSiteUrl));
 		htmlPage.delete();		
 	}
 	
@@ -123,7 +123,7 @@ public class Parser implements MessageListener,Module{
 				DownloadToParserMessage message = msg.getBody(DownloadToParserMessage.class);
 				String base64  = message.getBase64Encode();
 				String name = message.getHtmlFileName();
-				String urlSite = Base64.decodeBase64(base64).toString();
+				String urlSite = message.getUrlSite();
 				
 				File directoryOutput = new File(directory+"/"+urlSite);
 		    	if(!directoryOutput.exists()){

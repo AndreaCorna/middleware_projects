@@ -86,6 +86,10 @@ public class ImageDownloader implements MessageListener,Module{
 		BufferedReader br = null;
 		String imageUrl;
 		PrintWriter imageNameList = null;
+		File directoryOutput = new File(directory+"/"+webSiteBase64);
+    	if(!directoryOutput.exists()){
+    		directoryOutput.mkdir();
+    	}
 		try {
 			br = new BufferedReader(new FileReader(imageList));
 			imageNameList = new PrintWriter(directory+"/image_name_list_"+webSiteBase64+".txt");
@@ -109,7 +113,7 @@ public class ImageDownloader implements MessageListener,Module{
 						System.out.println("[IMAGES_DOWNLOADER] extension  "+ extension);
 	
 	
-						File outputfile = new File(directory+"/"+finalImageName);
+						File outputfile = new File(directory+"/"+webSiteBase64+"/"+finalImageName);
 						ImageIO.write(image, extension, outputfile);						
 						manager.uploadFile(outputfile, finalImageName,webSiteBase64);
 						imageNameList.println(finalImageName);
