@@ -10,11 +10,11 @@ public class ImageDownloaderToHtmlModifierMessage implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private String base64Encode;
-	private String fileImageName;
+	private String imageListName;
 	
 	public ImageDownloaderToHtmlModifierMessage(String base64Encode, String fileImageName){
 		this.base64Encode = base64Encode;
-		this.fileImageName = fileImageName;
+		this.imageListName = fileImageName;
 	}
 	
 	public String getBase64Encode(){
@@ -22,7 +22,7 @@ public class ImageDownloaderToHtmlModifierMessage implements Serializable{
 	}
 	
 	public String getFileImageName(){
-		return this.fileImageName;
+		return this.imageListName;
 	}
 
 }

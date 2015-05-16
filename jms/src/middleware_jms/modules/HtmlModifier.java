@@ -1,8 +1,11 @@
 package middleware_jms.modules;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -62,8 +65,8 @@ public class HtmlModifier implements MessageListener,Module{
     			System.out.println("[HTMLMODIFIER] => Received "+msg.getBody(ImageDownloaderToHtmlModifierMessage.class));
     			ImageDownloaderToHtmlModifierMessage message = msg.getBody(ImageDownloaderToHtmlModifierMessage.class);
 				String base64  = message.getBase64Encode();
-				String imageUrl = message.getFileImageName();
-				modifyPage(base64,imageUrl);
+				String imageNameList = message.getFileImageName();
+				modifyPage(base64,imageNameList);
     		} catch (JMSException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
@@ -95,45 +98,67 @@ public class HtmlModifier implements MessageListener,Module{
 	 * @param webSiteBase64 - webSite url base64 encode
 	 * @param imageUrl - name image to substitute
 	 */
-	private void modifyPage(String webSiteBase64, String imageUrl){
+	private void modifyPage(String webSiteBase64, String imageNameListFile){
 		File directoryOutput = new File(directory+"/"+webSiteBase64);
-    	if(!directoryOutput.exists()){
-    		directoryOutput.mkdir();
-    	}
-		
-		File htmlPage = new File(directory+"/"+webSiteBase64+"/"+"index.html");
-		if(!htmlPage.exists()){
-			htmlPage = manager.getFile(webSiteBase64,"index.html",directory+"/"+webSiteBase64);
-		}
-		
-		File imageFile = manager.getFile(webSiteBase64, imageUrl,directory+"/"+webSiteBase64);
-		
-		String encodedStringImage = encodeImageToBase64(imageFile);
+    	directoryOutput.mkdir();
+    	
+		File htmlPage = manager.getFile(webSiteBase64,"index.html",directory+"/"+webSiteBase64);
+		File imageListName = manager.getFile(webSiteBase64, imageNameListFile, directory+"/"+webSiteBase64);
+		BufferedReader br = null;
+		Document doc= null;
 		
 		try {
-			Document doc = Jsoup.parse(htmlPage, "UTF-8");
-		
-			String match= "img[src*="+imageUrl+"]";
-			System.out.println("Searching for "+imageUrl+ " trying to match "+match);		
-			Elements images = doc.select(match);
-			if(images.isEmpty()){
-				System.out.println("wasn't able to find image "+ imageUrl);
-			}
-			Iterator<Element> iterator = images.iterator();
+			br = new BufferedReader(new FileReader(imageListName));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String currentImage = null;
+		try {
+			doc = Jsoup.parse(htmlPage, "UTF-8");
 			
-			while (iterator.hasNext()) {
-				Element image =  iterator.next();
-				image.attr("src","data:image/jpg;base64,"+encodedStringImage);
+			while((currentImage=br.readLine())!=null){
+			
+				File imageFile = manager.getFile(webSiteBase64, currentImage,directory+"/"+webSiteBase64);
+				
+				String encodedStringImage = encodeImageToBase64(imageFile);
+				
+			
+				String match= "img[src*="+currentImage+"]";
+				System.out.println("[XXXXXXXXXXXX]Searching for "+ currentImage + " trying to match "+match);		
+				Elements images = doc.select(match);
+				if(images.isEmpty()){
+					System.out.println("[XXXXXXXXXXXX]wasn't able to find image "+ currentImage);
+				}
+				Iterator<Element> iterator = images.iterator();
+				
+				while (iterator.hasNext()) {
+					Element image =  iterator.next();
+					image.attr("src","data:image/jpg;base64,"+encodedStringImage);
+				}
+				
+				
+				imageFile.delete();
 			}
-			PrintWriter out = new PrintWriter(directory+"/"+webSiteBase64+"/"+"index.html");
-			out.print(doc.html());
-			out.close();
-			} catch (IOException e) {
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		imageFile.delete();
 		
+		PrintWriter out=null;
+		try {
+			out = new PrintWriter(directory+"/"+webSiteBase64+"/"+"index.html");
+			out.print(doc.html());
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			out.close();
+		}
+		
+	
 		
 		
 	}

@@ -2,6 +2,7 @@ package middleware_jms.modules;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -86,21 +87,25 @@ public class Parser implements MessageListener,Module{
 		Document doc = Jsoup.parse(htmlPage, "UTF-8", webSiteUrl);			
 		Elements images = doc.select("img");
 		Iterator<Element> iterator = images.iterator();
+		PrintWriter writer = new PrintWriter(directory+"/list_images_"+webSiteBase64+".txt","UTF-8");
 		while (iterator.hasNext()) {
 			Element image =  iterator.next();
 			String url = image.absUrl("src");
 			String dataUrl = image.absUrl("data-src");
 			if(!url.isEmpty()){
 				System.out.println("[Parser] image absolute url "+url);
-
-				jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, url));
+				writer.println(url);
+				
 			}else if(!dataUrl.isEmpty()){
 				System.out.println("[Parser] image absolute url "+url);
-
-				jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, dataUrl));
+		//		writer.println(url);
 			}
 			//
 		}
+		writer.close();
+		manager.uploadFile(new File(directory+"/list_images_"+webSiteBase64+".txt"), "list_image.txt", webSiteBase64);//uploading the file list_images_base64.txt on S3 with name list_image
+		System.out.println("[PARSER]sending message to Image downloader");
+		jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, "list_image.txt"));
 		htmlPage.delete();		
 	}
 	

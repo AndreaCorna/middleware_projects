@@ -11,19 +11,19 @@ public class ParserToImageDownloaderMessage implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String base64Encode;
-	private String imageAbsoluteUrl;
+	private String listImageUrl;
 	
-	public ParserToImageDownloaderMessage(String base64Encode, String imageAbsoluteUrl){
+	public ParserToImageDownloaderMessage(String base64Encode, String listImageUrl){
 		this.base64Encode = base64Encode;
-		this.imageAbsoluteUrl = imageAbsoluteUrl;
+		this.listImageUrl = listImageUrl;
 	}
 	
 	public String getBase64Encode(){
 		return this.base64Encode;
 	}
 	
-	public String getAbsoluteImageUrl(){
-		return this.imageAbsoluteUrl;
+	public String getListImageUrl(){
+		return this.listImageUrl;
 	}
 
 	
