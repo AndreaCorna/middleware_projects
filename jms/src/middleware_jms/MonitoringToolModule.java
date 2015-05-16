@@ -21,7 +21,7 @@ public class MonitoringToolModule implements Runnable {
 	
 
 	private static final int MAX_INSTANCES = 100;
-	private static final int MIN_INSTANCES = 10;
+	private static final int MIN_INSTANCES = 1;
 	private QueueBrowser queueBrowser;
 	private ArrayList<Module> modulesList;
 	private Integer threshold;

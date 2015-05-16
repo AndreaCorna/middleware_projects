@@ -6,7 +6,7 @@ public class MainHtmlDownloader {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		MonitoringToolModule htmlDownloaderMonitor = new MonitoringToolModule(HtmlDownloader.class, "URLQueue", 10);
+		MonitoringToolModule htmlDownloaderMonitor = new MonitoringToolModule(HtmlDownloader.class, "URLQueue", 1);
 		Thread thread = new Thread(htmlDownloaderMonitor);
 		thread.start();
 		thread.join();

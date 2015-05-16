@@ -95,7 +95,7 @@ public class HtmlDownloader implements MessageListener,Module{
 		try {
 			html = Jsoup.connect(url).get().html();
 			
-			Document doc = Jsoup.parse(html);
+			Document doc = Jsoup.parse(html,url);
 			//Download css and insert into html
 	        Elements imports = doc.select("link[rel=stylesheet]");
 	        Iterator<Element> iterator = imports.iterator();
