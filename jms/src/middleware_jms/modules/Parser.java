@@ -84,12 +84,14 @@ public class Parser implements MessageListener,Module{
 	 */
 	private void parse(String webSiteUrl,File htmlPage, String webSiteBase64) throws IOException{
 		
-		Document doc = Jsoup.parse(htmlPage, "UTF-8", webSiteUrl);			
+		Document doc = Jsoup.parse(htmlPage, "UTF-8", webSiteUrl);	
+		
 		Elements images = doc.select("img");
 		Iterator<Element> iterator = images.iterator();
 		PrintWriter writer = new PrintWriter(directory+"/list_images_"+webSiteBase64+".txt","UTF-8");
 		while (iterator.hasNext()) {
 			Element image =  iterator.next();
+			System.out.println("image "+image.toString()+ " "+image.absUrl("src"));
 			String url = image.absUrl("src");
 			String dataUrl = image.absUrl("data-src");
 			if(!url.isEmpty()){
@@ -105,7 +107,7 @@ public class Parser implements MessageListener,Module{
 		writer.close();
 		manager.uploadFile(new File(directory+"/list_images_"+webSiteBase64+".txt"), "list_image.txt", webSiteBase64);//uploading the file list_images_base64.txt on S3 with name list_image
 		System.out.println("[PARSER]sending message to Image downloader");
-		jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, "list_image.txt"));
+		jmsProducer.send(ImagesQueue, new ParserToImageDownloaderMessage(webSiteBase64, "list_image.txt",webSiteUrl));
 		htmlPage.delete();		
 	}
 	
@@ -119,7 +121,7 @@ public class Parser implements MessageListener,Module{
 				DownloadToParserMessage message = msg.getBody(DownloadToParserMessage.class);
 				String base64  = message.getBase64Encode();
 				String name = message.getHtmlFileName();
-				String urlSite = Base64.decodeBase64(base64).toString();
+				String urlSite = message.getUrlSite();
 				
 				File directoryOutput = new File(directory+"/"+urlSite);
 		    	if(!directoryOutput.exists()){
