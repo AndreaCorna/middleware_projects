@@ -84,13 +84,17 @@ public class Parser implements MessageListener,Module{
 	 */
 	private void parse(String webSiteUrl,File htmlPage, String webSiteBase64) throws IOException{
 		
-		Document doc = Jsoup.parse(htmlPage, "UTF-8", webSiteUrl);			
+		Document doc = Jsoup.parse(htmlPage, "UTF-8", webSiteUrl);	
+		System.out.println("[Parser] Website URI"+Base64.decodeBase64(webSiteBase64));
+		doc.setBaseUri(webSiteUrl);
 		Elements images = doc.select("img");
 		Iterator<Element> iterator = images.iterator();
 		PrintWriter writer = new PrintWriter(directory+"/list_images_"+webSiteBase64+".txt","UTF-8");
 		while (iterator.hasNext()) {
 			Element image =  iterator.next();
 			String url = image.absUrl("src");
+			System.out.println("[Parser] Inside Image urls "+image.toString());
+			System.out.println("[Parser] urs "+url);
 			String dataUrl = image.absUrl("data-src");
 			if(!url.isEmpty()){
 				System.out.println("[Parser] image absolute url "+url);
